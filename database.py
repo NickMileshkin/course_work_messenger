@@ -1,10 +1,13 @@
 class AccountDatabase:
 
-    def add_new_account(self, id_, login, password):
+    def get_account(self):
         pass
 
-    def change_password(self, login, password, new_password):
+    def add_new_account(self, id_, login, password) -> bool:
         pass
 
-    def change_login(self, login, password, new_login):
+    def change_password(self, account_id, new_password) -> bool:
+        pass
+
+    def change_login(self, account_id, new_login) -> bool:
         pass
