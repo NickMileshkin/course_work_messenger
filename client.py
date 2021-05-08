@@ -1,6 +1,7 @@
 import sys  # sys нужен для передачи argv в QApplication
 from PyQt5 import QtWidgets
 from Interface.registration import Ui_RegistrationWindow  # Это наш конвертированный файл дизайна
+from Interface.authorization import Ui_AuthorizationWindow
 
 
 class RegistrationWindow(QtWidgets.QMainWindow, Ui_RegistrationWindow):
@@ -20,18 +21,24 @@ class RegistrationWindow(QtWidgets.QMainWindow, Ui_RegistrationWindow):
             print("login = ", login)
             print("password = ", password)
 
-
     def go_to_authorization_window(self):
         self.authorization_window = AuthorizationWindow()
         self.authorization_window.show()
 
 
-class AuthorizationWindow(QtWidgets.QMainWindow, Ui_RegistrationWindow):
+class AuthorizationWindow(QtWidgets.QMainWindow, Ui_AuthorizationWindow):
     def __init__(self):
         # Это здесь нужно для доступа к переменным, методам
         # и т.д. в файле design.py
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
+
+    def authorization_acc(self):
+        login = (self.line_edit_login.text())
+        password = (self.line_edit_password.text())
+        if (login != '') and (password != ''):
+            print("login = ", login)
+            print("password = ", password)
 
 
 def main():
