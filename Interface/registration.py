@@ -42,9 +42,6 @@ class Ui_RegistrationWindow(object):
         self.label.setGeometry(QtCore.QRect(80, 170, 81, 21))
         self.label.setObjectName("label")
 
-
-
-
         self.label_2 = ClickableLabel(self.centralwidget)
         color_label_2 = self.label_2.palette()
         color_label_2.setColor(QtGui.QPalette.WindowText, QtGui.QColor("blue"))
