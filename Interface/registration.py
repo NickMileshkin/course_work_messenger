@@ -13,8 +13,8 @@ class Ui_RegistrationWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("Registration")
         MainWindow.resize(290, 439)
-        MainWindow.setMinimumSize(QtCore.QSize(290, 0))
-        MainWindow.setMaximumSize(QtCore.QSize(440, 16777215))
+        MainWindow.setMinimumSize(QtCore.QSize(290, 439))
+        MainWindow.setMaximumSize(QtCore.QSize(290, 439))
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -58,10 +58,6 @@ class Ui_RegistrationWindow(object):
         self.label_3.setObjectName("label_3")
 
         MainWindow.setCentralWidget(self.centralwidget)
-
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
