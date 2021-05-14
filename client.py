@@ -34,13 +34,14 @@ class AuthorizationWindow(QtWidgets.QMainWindow, Ui_AuthorizationWindow):
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
         self.btn_authorization.clicked.connect(self.authorization_acc)
         self.btn_authorization.clicked.connect(self.close)
-        self.main_window = MainPage()
+        global main_window
+        main_window = MainPage()
 
     def authorization_acc(self):
         login = (self.line_edit_login.text())
         password = (self.line_edit_password.text())
         if (login != '') and (password != ''):
-            self.main_window.show()
+            main_window.show()
 
 
 class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -61,6 +62,10 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):
             self.scrollLayout_message.addRow(new_message)
             self.textEdit_message.clear()
 
+    def keyPressEvent(self, event):
+        if event.key() == 16777220:
+            self.send_message()
+
 
 class ClickableMessage(QtWidgets.QWidget):
     clicked = QtCore.pyqtSignal()
@@ -74,8 +79,7 @@ class Message(ClickableMessage):
     def __init__(self):
         super(Message, self).__init__()
         self.name = QtWidgets.QLabel("You")
-        self.message_text = QtWidgets.QLabel(registration_window.authorization_window.main_window.textEdit_message
-                                             .text())  # надо сделать как-то подругому
+        self.message_text = QtWidgets.QLabel(main_window.textEdit_message.text())  # надо сделать как-то подругому
         self.message_time = QtWidgets.QLabel(str(datetime.now().time()).split(".")[0])
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.name)
@@ -90,7 +94,12 @@ class Message(ClickableMessage):
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
-    registration_window = RegistrationWindow()
-    registration_window.show()  # Показываем окно
+    x = input()
+    if x == "reg":
+        registration_window = RegistrationWindow()
+        registration_window.show()  # Показываем окно
+    else:
+        main_window = MainPage()
+        main_window.show()
     app.exec_()  # то запускаем функцию main()
 
