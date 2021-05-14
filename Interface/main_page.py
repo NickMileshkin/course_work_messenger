@@ -32,6 +32,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.textEdit_message, 2, 4, 1, 1)
 
         self.scrollArea_message = QtWidgets.QScrollArea(self.centralwidget)
+        self.vbar_scrollArea_message = self.scrollArea_message.verticalScrollBar()
         self.scrollArea_message.setMinimumSize(QtCore.QSize(600, 0))
         self.scrollArea_message.setWidgetResizable(True)
         self.scrollArea_message.setObjectName("scrollArea_message")
