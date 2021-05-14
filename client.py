@@ -6,6 +6,7 @@ from Interface.authorization import Ui_AuthorizationWindow
 from Interface.main_page import Ui_MainWindow
 
 
+
 class RegistrationWindow(QtWidgets.QMainWindow, Ui_RegistrationWindow):
     def __init__(self):
         super().__init__()
@@ -14,6 +15,7 @@ class RegistrationWindow(QtWidgets.QMainWindow, Ui_RegistrationWindow):
         self.label_2.clicked.connect(self.go_to_authorization_window)
         self.label_2.clicked.connect(self.close)
         self.authorization_window = AuthorizationWindow()
+
 
     def registration_acc(self):
         login = (self.line_edit_login.text())
@@ -48,26 +50,39 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.messages = []
+        self.active_dialog = 0
+        self.dialogs_count = 0
+        self.messages = [[]]
+        self.dialogs = []
         self.btn_send_message.clicked.connect(self.send_message)
-
+        self.textEdit_message.setEnabled(False)
     # Пока пустая функция которая выполняется
     # при нажатии на кнопку
+
     def send_message(self):
         if self.textEdit_message.text() != '':
             new_message = Message()
             new_message.clicked.connect(new_message.p)
-            self.messages.append(new_message)
-
+            self.messages[self.active_dialog].append(new_message)
             self.scrollLayout_message.addRow(new_message)
             self.textEdit_message.clear()
+
+    def add_dialog(self):
+        new_dialog = Dialog()
+        self.dialogs_count += 1
+        self.messages.append([])
+        new_dialog.clicked.connect(new_dialog.open_dialogs)
+        self.dialogs.append(new_dialog)
+        self.scrollLayout_dialogs.addRow(new_dialog)
 
     def keyPressEvent(self, event):
         if event.key() == 16777220:
             self.send_message()
+        if event.key() == 61:
+            self.add_dialog()
 
 
-class ClickableMessage(QtWidgets.QWidget):
+class ClickableWidget(QtWidgets.QWidget):
     clicked = QtCore.pyqtSignal()
 
     def mousePressEvent(self, QMouseEvent):
@@ -75,11 +90,11 @@ class ClickableMessage(QtWidgets.QWidget):
         QtWidgets.QWidget.mousePressEvent(self, QMouseEvent)
 
 
-class Message(ClickableMessage):
+class Message(ClickableWidget):
     def __init__(self):
         super(Message, self).__init__()
         self.name = QtWidgets.QLabel("You")
-        self.message_text = QtWidgets.QLabel(main_window.textEdit_message.text())  # надо сделать как-то подругому
+        self.message_text = QtWidgets.QLabel(main_window.textEdit_message.text())
         self.message_time = QtWidgets.QLabel(str(datetime.now().time()).split(".")[0])
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.name)
@@ -92,14 +107,52 @@ class Message(ClickableMessage):
         print(self.message_time.text())
 
 
+class Dialog(ClickableWidget):
+    def __init__(self):
+        super(Dialog, self).__init__()
+        self.number = main_window.dialogs_count
+        self.container = QtWidgets.QWidget(self)
+        self.container.setGeometry(QtCore.QRect(0, 0, 198, 50))
+        self.name = QtWidgets.QLabel("Somebody ")
+        self.line = QtWidgets.QFrame()
+        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.layout = QtWidgets.QVBoxLayout(self.container)
+        self.layout.addWidget(self.name)
+        self.layout.addWidget(self.line)
+        self.container.setStyleSheet("background-color:white;")
+
+        self.setLayout(self.layout)
+
+    def open_dialogs(self):
+        main_window.textEdit_message.clear()
+        for i in reversed(range(main_window.scrollLayout_message.count())):
+            widgetToRemove = main_window.scrollLayout_message.itemAt(i).widget()
+            # remove it from the layout list
+            main_window.scrollLayout_message.removeWidget(widgetToRemove)
+            # remove it from the gui
+            widgetToRemove.setParent(None)
+
+
+        for i in range(len(main_window.messages[self.number])):
+            main_window.scrollLayout_message.addRow(main_window.messages[self.number][i])
+        for i in range(len(main_window.dialogs)):
+            main_window.dialogs[i].container.setStyleSheet("background-color:white;")
+
+        self.container.setStyleSheet("background-color:blue;")
+        main_window.textEdit_message.setEnabled(True)
+        main_window.active_dialog = self.number
+
+
+
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
-    x = input()
-    if x == "reg":
+    #x = input()
+    """if x == "reg":
         registration_window = RegistrationWindow()
         registration_window.show()  # Показываем окно
     else:
         main_window = MainPage()
-        main_window.show()
+        main_window.show()"""
+    main_window = MainPage()
+    main_window.show()
     app.exec_()  # то запускаем функцию main()
-
