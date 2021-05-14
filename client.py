@@ -6,8 +6,7 @@ from Interface.authorization import Ui_AuthorizationWindow
 from Interface.main_page import Ui_MainWindow
 
 
-
-class RegistrationWindow(QtWidgets.QMainWindow, Ui_RegistrationWindow):
+class RegistrationWindow(QtWidgets.QMainWindow, Ui_RegistrationWindow):  # класс, отвечающий за окно регистрации
     def __init__(self):
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
@@ -15,7 +14,6 @@ class RegistrationWindow(QtWidgets.QMainWindow, Ui_RegistrationWindow):
         self.label_2.clicked.connect(self.go_to_authorization_window)
         self.label_2.clicked.connect(self.close)
         self.authorization_window = AuthorizationWindow()
-
 
     def registration_acc(self):
         login = (self.line_edit_login.text())
@@ -25,15 +23,13 @@ class RegistrationWindow(QtWidgets.QMainWindow, Ui_RegistrationWindow):
             print("password = ", password)
 
     def go_to_authorization_window(self):
-
         self.authorization_window.show()
 
 
-class AuthorizationWindow(QtWidgets.QMainWindow, Ui_AuthorizationWindow):
+class AuthorizationWindow(QtWidgets.QMainWindow, Ui_AuthorizationWindow):  # класс, отвечающий за окно авторизации
     def __init__(self):
-
         super().__init__()
-        self.setupUi(self)  # Это нужно для инициализации нашего дизайна
+        self.setupUi(self)
         self.btn_authorization.clicked.connect(self.authorization_acc)
         self.btn_authorization.clicked.connect(self.close)
         global main_window
@@ -46,19 +42,18 @@ class AuthorizationWindow(QtWidgets.QMainWindow, Ui_AuthorizationWindow):
             main_window.show()
 
 
-class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):
+class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвечающий за главное окно
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.active_dialog = 0
-        self.dialogs_count = 0
-        self.messages = [[]]
-        self.dialogs = []
+        self.active_dialog = 0  # хранит номер активного диалога
+        self.dialogs_count = 0  # количество диалогов
+        self.messages = [[]]  # список списков для хранения сообщений по каждому диалогу
+        self.dialogs = []  # храни экземпляры Класса Dialog
         self.btn_send_message.clicked.connect(self.send_message)
-        self.textEdit_message.setEnabled(False)
-    # Пока пустая функция которая выполняется
-    # при нажатии на кнопку
+        self.textEdit_message.setEnabled(False)  # Отключает возможность ввода сообщения
 
+    # функция отправки сообщения
     def send_message(self):
         if self.textEdit_message.text() != '':
             new_message = Message()
@@ -67,6 +62,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):
             self.scrollLayout_message.addRow(new_message)
             self.textEdit_message.clear()
 
+    # функция добавления диалога
     def add_dialog(self):
         new_dialog = Dialog()
         self.dialogs_count += 1
@@ -75,14 +71,15 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):
         self.dialogs.append(new_dialog)
         self.scrollLayout_dialogs.addRow(new_dialog)
 
+    # функция отвечающая за нажатие кнопки
     def keyPressEvent(self, event):
-        if event.key() == 16777220:
+        if event.key() == 16777220:  # нажатие Enter
             self.send_message()
-        if event.key() == 61:
+        if event.key() == 61:  # условия для проверки работы добавления диалогов
             self.add_dialog()
 
 
-class ClickableWidget(QtWidgets.QWidget):
+class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов, на которые можно нажимать
     clicked = QtCore.pyqtSignal()
 
     def mousePressEvent(self, QMouseEvent):
@@ -90,7 +87,7 @@ class ClickableWidget(QtWidgets.QWidget):
         QtWidgets.QWidget.mousePressEvent(self, QMouseEvent)
 
 
-class Message(ClickableWidget):
+class Message(ClickableWidget):  # класс сообшения
     def __init__(self):
         super(Message, self).__init__()
         self.name = QtWidgets.QLabel("You")
@@ -103,11 +100,11 @@ class Message(ClickableWidget):
 
         self.setLayout(layout)
 
-    def p(self):
+    def p(self):  # Временная заглушка функция выполняется при нажатии на сообщение
         print(self.message_time.text())
 
 
-class Dialog(ClickableWidget):
+class Dialog(ClickableWidget):  # Класс диалог
     def __init__(self):
         super(Dialog, self).__init__()
         self.number = main_window.dialogs_count
@@ -123,7 +120,7 @@ class Dialog(ClickableWidget):
 
         self.setLayout(self.layout)
 
-    def open_dialogs(self):
+    def open_dialogs(self):  # функция отвечающая за открытие экземпляра класса диалог
         main_window.textEdit_message.clear()
         for i in reversed(range(main_window.scrollLayout_message.count())):
             widgetToRemove = main_window.scrollLayout_message.itemAt(i).widget()
@@ -131,7 +128,6 @@ class Dialog(ClickableWidget):
             main_window.scrollLayout_message.removeWidget(widgetToRemove)
             # remove it from the gui
             widgetToRemove.setParent(None)
-
 
         for i in range(len(main_window.messages[self.number])):
             main_window.scrollLayout_message.addRow(main_window.messages[self.number][i])
@@ -143,10 +139,9 @@ class Dialog(ClickableWidget):
         main_window.active_dialog = self.number
 
 
-
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
-    #x = input()
+    # x = input()
     """if x == "reg":
         registration_window = RegistrationWindow()
         registration_window.show()  # Показываем окно
