@@ -44,6 +44,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.scrollArea_message, 0, 4, 1, 2)
 
         self.btn_send_message = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_send_message.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.btn_send_message.setMinimumSize(QtCore.QSize(30, 30))
         self.btn_send_message.setMaximumSize(QtCore.QSize(30, 30))
         self.btn_send_message.setText("")
@@ -53,7 +54,9 @@ class Ui_MainWindow(object):
         self.btn_send_message.setIconSize(QtCore.QSize(30, 30))
         self.btn_send_message.setObjectName("btn_send_message")
         self.gridLayout.addWidget(self.btn_send_message, 2, 5, 1, 1)
+
         self.btn_settings = QtWidgets.QPushButton(self.centralwidget)
+        self.btn_settings.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.btn_settings.setMinimumSize(QtCore.QSize(30, 30))
         self.btn_settings.setMaximumSize(QtCore.QSize(30, 30))
         self.btn_settings.setText("")
@@ -68,9 +71,11 @@ class Ui_MainWindow(object):
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line.setObjectName("line")
         self.gridLayout.addWidget(self.line, 0, 3, 1, 1)
+
         self.label_user_name = QtWidgets.QLabel(self.centralwidget)
         self.label_user_name.setObjectName("label_user_name")
         self.gridLayout.addWidget(self.label_user_name, 2, 1, 1, 1)
+
         self.line_2 = QtWidgets.QFrame(self.centralwidget)
         self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
