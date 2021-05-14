@@ -60,7 +60,9 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             new_message.clicked.connect(new_message.p)
             self.messages[self.active_dialog].append(new_message)
             self.scrollLayout_message.addRow(new_message)
+
             self.textEdit_message.clear()
+            self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
 
     # функция добавления диалога
     def add_dialog(self):
@@ -131,12 +133,14 @@ class Dialog(ClickableWidget):  # Класс диалог
 
         for i in range(len(main_window.messages[self.number])):
             main_window.scrollLayout_message.addRow(main_window.messages[self.number][i])
+        main_window.vbar_scrollArea_message.setValue(main_window.vbar_scrollArea_message.maximum())
         for i in range(len(main_window.dialogs)):
             main_window.dialogs[i].container.setStyleSheet("background-color:white;")
 
         self.container.setStyleSheet("background-color:blue;")
         main_window.textEdit_message.setEnabled(True)
         main_window.active_dialog = self.number
+        main_window.vbar_scrollArea_message.setValue(main_window.vbar_scrollArea_message.maximum())
 
 
 if __name__ == '__main__':
