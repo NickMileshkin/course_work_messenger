@@ -77,6 +77,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     def keyPressEvent(self, event):
         if event.key() == 16777220:  # нажатие Enter
             self.send_message()
+            self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
         if event.key() == 61:  # условия для проверки работы добавления диалогов
             self.add_dialog()
 
@@ -133,7 +134,7 @@ class Dialog(ClickableWidget):  # Класс диалог
 
         for i in range(len(main_window.messages[self.number])):
             main_window.scrollLayout_message.addRow(main_window.messages[self.number][i])
-        main_window.vbar_scrollArea_message.setValue(main_window.vbar_scrollArea_message.maximum())
+
         for i in range(len(main_window.dialogs)):
             main_window.dialogs[i].container.setStyleSheet("background-color:white;")
 
