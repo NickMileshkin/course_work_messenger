@@ -21,8 +21,12 @@ class AccountDatabase:
                                        FROM accounts""").fetchall()
         return result
 
-    def add_new_account(self, id_, login, password) -> bool:
-        pass
+    def add_new_account(self, login, password) -> bool:
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            cursor.execute("""INSERT INTO accounts (login, password)
+                              VALUES (?, ?)""", (login, password))
+            connection.commit()
 
     def change_password(self, account_id, new_password) -> bool:
         pass
