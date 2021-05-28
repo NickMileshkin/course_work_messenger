@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1105, 883)
+        MainWindow.resize(1100, 800)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -15,7 +15,7 @@ class Ui_MainWindow(object):
 
         self.scrollArea_dialogs = QtWidgets.QScrollArea(self.centralwidget)
         self.scrollArea_dialogs.setMinimumSize(QtCore.QSize(200, 0))
-        self.scrollArea_dialogs.setMaximumSize(QtCore.QSize(250, 16777215))
+        self.scrollArea_dialogs.setMaximumSize(QtCore.QSize(250, 1080))
         self.scrollArea_dialogs.setWidgetResizable(True)
         self.scrollArea_dialogs.setObjectName("scrollArea_dialogs")
 
@@ -27,13 +27,13 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.scrollArea_dialogs, 0, 0, 1, 3)
 
         self.textEdit_message = QtWidgets.QLineEdit(self.centralwidget)
-        self.textEdit_message.setMaximumSize(QtCore.QSize(16777215, 50))
+        self.textEdit_message.setMaximumSize(QtCore.QSize(16777215, 30))
         self.textEdit_message.setObjectName("textEdit_message")
         self.gridLayout.addWidget(self.textEdit_message, 2, 4, 1, 1)
 
         self.scrollArea_message = QtWidgets.QScrollArea(self.centralwidget)
         self.vbar_scrollArea_message = self.scrollArea_message.verticalScrollBar()
-        self.scrollArea_message.setMinimumSize(QtCore.QSize(600, 0))
+        self.scrollArea_message.setMinimumSize(QtCore.QSize(1100, 800))
         self.scrollArea_message.setWidgetResizable(True)
         self.scrollArea_message.setObjectName("scrollArea_message")
 
