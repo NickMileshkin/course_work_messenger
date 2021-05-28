@@ -55,14 +55,13 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
 
     # функция отправки сообщения
     def send_message(self):
-        if self.textEdit_message.text() != '':
+        if self.textEdit_message.text() != '' and not(self.textEdit_message.text().isspace()):
             new_message = Message()
             new_message.clicked.connect(new_message.p)
             self.messages[self.active_dialog].append(new_message)
             self.scrollLayout_message.addRow(new_message)
-
-            self.textEdit_message.clear()
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
+        self.textEdit_message.clear()
 
     # функция добавления диалога
     def add_dialog(self):
@@ -95,6 +94,7 @@ class Message(ClickableWidget):  # класс сообшения
         super(Message, self).__init__()
         self.name = QtWidgets.QLabel("You")
         self.message_text = QtWidgets.QLabel(main_window.textEdit_message.text())
+        self.message_text.setWordWrap(True)
         self.message_time = QtWidgets.QLabel(str(datetime.now().time()).split(".")[0])
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.name)
@@ -146,8 +146,8 @@ class Dialog(ClickableWidget):  # Класс диалог
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
-    # x = input()
-    """if x == "reg":
+    """x = input()
+    if x == "reg":
         registration_window = RegistrationWindow()
         registration_window.show()  # Показываем окно
     else:
