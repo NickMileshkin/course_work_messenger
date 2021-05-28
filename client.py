@@ -49,7 +49,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.active_dialog = 0  # хранит номер активного диалога
         self.dialogs_count = 0  # количество диалогов
         self.messages = [[]]  # список списков для хранения сообщений по каждому диалогу
-        self.dialogs = []  # храни экземпляры Класса Dialog
+        self.dialogs = []  # хранит экземпляры Класса Dialog
         self.btn_send_message.clicked.connect(self.send_message)
         self.textEdit_message.setEnabled(False)  # Отключает возможность ввода сообщения
 
