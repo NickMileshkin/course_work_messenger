@@ -14,7 +14,7 @@ class AccountDatabase:
             connection.commit()
         connection.close()
 
-    def get_account(self):
+    def get_accounts(self):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
             result = cursor.execute("""SELECT id, login, password
@@ -27,6 +27,13 @@ class AccountDatabase:
             cursor.execute("""INSERT INTO accounts (login, password)
                               VALUES (?, ?)""", (login, password))
             connection.commit()
+
+    def get_authorization(self, login, password) -> bool:
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            account = cursor.execute("""SELECT id FROM accounts WHERE login = ? AND
+                                        password = ?""", (login, password)).fetchone()
+        return True if account is not None else False
 
     def change_password(self, account_id, new_password) -> bool:
         pass

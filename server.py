@@ -12,11 +12,11 @@ def hello_world():
 
 
 @app.route('/accounts', methods=['GET'])
-def get_account():
+def get_accounts():
     result = [{"id": id_, "login": login, "password": password}
-              for id_, login, password in db.get_account()]
+              for id_, login, password in db.get_accounts()]
     print(result)
-    return "db.get_account()"
+    return "db.get_accounts()"
 
 
 @app.route('/accounts', methods=['POST'])
@@ -26,6 +26,18 @@ def add_new_account():
     data = json.loads(request.data)
     db.add_new_account(data["login"], data["password"])
     return {"status": "ok"}
+
+
+@app.route('/accounts/auth', methods=['POST'])
+def get_authorization():
+    if not request.is_json:
+        return {"status": "error", "message": "request should be in json"}
+    data = json.loads(request.data)
+    result = db.get_authorization(data["login"], data["password"])
+    if result:
+        return {"auth": "passed"}
+    else:
+        return {"auth": "rejected"}
 
 
 @app.route('/accounts/<int:account_id>/password', methods=['POST'])
