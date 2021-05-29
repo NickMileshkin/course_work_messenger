@@ -35,19 +35,27 @@ def get_authorization():
     data = json.loads(request.data)
     result = db.get_authorization(data["login"], data["password"])
     if result:
-        return {"auth": "passed"}
+        return {"auth": result}
     else:
         return {"auth": "rejected"}
 
 
 @app.route('/accounts/<int:account_id>/password', methods=['POST'])
-def change_password():
-    return "db.change_password(account_id, new_password)"
+def change_password(account_id):
+    if not request.is_json:
+        return {"status": "error", "message": "request should be in json"}
+    data = json.loads(request.data)
+    db.change_password(account_id, data["new_password"])
+    return {"status": "ok"}
 
 
 @app.route('/accounts/<int:account_id>/login', methods=['POST'])
-def change_login():
-    return "db.change_login(account_id, new_login)"
+def change_login(account_id):
+    if not request.is_json:
+        return {"status": "error", "message": "request should be in json"}
+    data = json.loads(request.data)
+    db.change_login(account_id, data["new_login"])
+    return {"status": "ok"}
 
 
 if __name__ == '__main__':
