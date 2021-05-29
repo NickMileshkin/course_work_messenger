@@ -34,10 +34,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
 
-        self.textEdit_login = QtWidgets.QLineEdit(self.centralwidget)
-        self.textEdit_login.setMinimumSize(QtCore.QSize(0, 30))
-        self.textEdit_login.setObjectName("textEdit_login")
-        self.horizontalLayout.addWidget(self.textEdit_login)
+        self.textEdit_search = QtWidgets.QLineEdit(self.centralwidget)
+        self.textEdit_search.setMinimumSize(QtCore.QSize(0, 30))
+        self.textEdit_search.setObjectName("textEdit_login")
+        self.textEdit_search.setPlaceholderText("Поиск друзей по логину или ID")
+        self.horizontalLayout.addWidget(self.textEdit_search)
 
         self.btn_search_login = QtWidgets.QPushButton(self.centralwidget)
         self.btn_search_login.setMinimumSize(QtCore.QSize(30, 30))
