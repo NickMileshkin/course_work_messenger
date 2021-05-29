@@ -46,12 +46,14 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.prev_active_dialog = 0
         self.active_dialog = 0  # хранит номер активного диалога
         self.dialogs_count = 0  # количество диалогов
         self.messages = [[]]  # список списков для хранения сообщений по каждому диалогу
         self.dialogs = []  # хранит экземпляры Класса Dialog
         self.btn_send_message.clicked.connect(self.send_message)
         self.textEdit_message.setEnabled(False)  # Отключает возможность ввода сообщения
+        self.btn_search_login.clicked.connect(self.search_account)
 
     # функция отправки сообщения
     def send_message(self):
@@ -61,6 +63,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             self.messages[self.active_dialog].append(new_message)
             self.scrollLayout_message.addRow(new_message)
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
+
         self.textEdit_message.clear()
 
     # функция добавления диалога
@@ -79,6 +82,10 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
         if event.key() == 61:  # условия для проверки работы добавления диалогов
             self.add_dialog()
+
+    # функция открытия окна с поиском аккаунта
+    def search_account(self):
+        pass
 
 
 class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов, на которые можно нажимать
@@ -113,7 +120,7 @@ class Dialog(ClickableWidget):  # Класс диалог
         self.number = main_window.dialogs_count
         self.container = QtWidgets.QWidget(self)
         self.container.setGeometry(QtCore.QRect(0, 0, 198, 50))
-        self.name = QtWidgets.QLabel("Somebody ")
+        self.name = QtWidgets.QLabel("Somebody " + str(self.number))
         self.line = QtWidgets.QFrame()
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.layout = QtWidgets.QVBoxLayout(self.container)
