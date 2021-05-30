@@ -19,8 +19,9 @@ class RegistrationWindow(QtWidgets.QDialog, Ui_RegistrationWindow):  # клас�
     def registration_acc(self):
         self.login = self.lineEdit_login.text()
         self.password = self.lineEdit_password.text()
-        if self.server.add_new_user(self.login, self.password):
-            self.close()
+        if len(self.login) >= 5 and len(self.password) >= 5:
+            if self.server.add_new_user(self.login, self.password):
+                self.close()
         else:
             print("Ты Чмо")
 
@@ -34,6 +35,7 @@ class AuthorizationWindow(QtWidgets.QDialog, Ui_AuthorizationWindow):  # кла�
         self.btn_authorization.clicked.connect(self.authorization_acc)
         self.login = None
         self.password = None
+
     def authorization_acc(self):
         self.login = (self.lineEdit_login.text())
         self.password = (self.lineEdit_password.text())
@@ -47,9 +49,13 @@ class AuthorizationWindow(QtWidgets.QDialog, Ui_AuthorizationWindow):  # кла�
 
 
 class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвечающий за главное окно
-    def __init__(self):
+    def __init__(self, server: ServerConnector):
         super().__init__()
         self.setupUi(self)
+        self.server = server
+        self.user_id = server.user_id
+        self.user_login = server.user_login
+        self.user_password = server.user_password
         self.prev_active_dialog = 0
         self.active_dialog = 0  # хранит номер активного диалога
         self.dialogs_count = 0  # количество диалогов
@@ -58,7 +64,8 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.btn_send_message.clicked.connect(self.send_message)
         self.textEdit_message.setEnabled(False)  # Отключает возможность ввода сообщения
         self.btn_search_login.clicked.connect(self.search_account)
-        self.label_user_name.setText(authorization_window.lineEdit_login.text())
+        self.label_user_name.setText(self.user_login)
+        self.label_iser_id.setText("#" + str(self.user_id))
 
     # функция отправки сообщения
     def send_message(self):
@@ -87,6 +94,8 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
         if event.key() == 61:  # условия для проверки работы добавления диалогов
             self.add_dialog()
+            print(self.server.user_login)
+            print(self.server.user_id)
 
     # функция открытия окна с поиском аккаунта
     def search_account(self):
@@ -163,10 +172,15 @@ if __name__ == '__main__':
 
     authorization_window = AuthorizationWindow()
     authorization_window.exec()
-    main_window = MainPage()
-    """if authorization_window.is_accepted:
+    if authorization_window.is_accepted:
         try:
-            connector.add_new_user(authorization_window.)
-        main_window = MainPage()
-        main_window.show()"""
+            connector.set_user(authorization_window.login, authorization_window.password)
+        except SecurityError:
+            error_box = QtWidgets.QErrorMessage()
+            error_box.showMessage("Check your credentials and try again!")
+            error_box.setWindowTitle("Security error")
+            error_box.exec()
+            sys.exit(1)
+        main_window = MainPage(connector)
+        main_window.show()
     app.exec_()  # то запускаем функцию main()
