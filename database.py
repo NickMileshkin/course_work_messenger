@@ -52,11 +52,11 @@ class AccountDatabase:
                            (new_login, account_id))
             connection.commit()
 
-    def check_password(self, account_id, password):
+    def check_password(self, account_id, password) -> bool:
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
             check = cursor.execute("""SELECT password FROM accounts WHERE id = ?""",
-                                   account_id).fetchone()[0]
+                                   (account_id,)).fetchone()[0]
         if check == password:
             return True
         else:
