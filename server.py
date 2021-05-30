@@ -37,9 +37,9 @@ def get_authorization():
     data = json.loads(request.data)
     result = accDB.get_authorization(data["login"], data["password"])
     if result:
-        return {"auth": result}
+        return {"status": result}
     else:
-        return {"auth": "rejected"}
+        return {"status": "rejected"}
 
 
 @app.route('/accounts/<int:account_id>/password', methods=['POST'])

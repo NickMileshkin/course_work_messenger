@@ -74,12 +74,25 @@ class MessageDatabase:
                               sender_id INTEGER NOT NULL,
                               recipient_id INTEGER NOT NULL,
                               time INTEGER NOT NULL,
-                              message TEXT NOT NULL);""")
+                              message TEXT NOT NULL,
+                              is_new BOOLEAN NOT NULL);""")
             connection.commit()
         connection.close()
 
     def send_message(self, sender_id, recipient_id, time, message):
-        pass
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            cursor.execute("""INSERT INTO messages (sender_id, recipient_id, time, message, is_new)
+                              VALUES (?, ?, ?, ?, ?)""", (sender_id, recipient_id, time, message, True))
+            connection.commit()
 
     def synchronization(self, user_id):
         pass
+
+    def get_new_messages(self, user_id):
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            new_msg = cursor.execute("""SELECT sender_id, time, message, FROM messages 
+                                        WHERE recipient_id = ? AND is_new = ?""",
+                                        (user_id, True)).fetchall()
+            print(new_msg)
