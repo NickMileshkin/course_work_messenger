@@ -30,7 +30,7 @@ class ServerConnector:
                               json={'login': user_login,
                                     'password': user_password}).json()
         if result['status'] == "error":
-            raise Exception
+            raise Exception(result['message'])
         elif result['status'] == 'rejected':
             raise SecurityError
         else:
