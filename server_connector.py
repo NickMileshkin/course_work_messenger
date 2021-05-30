@@ -27,13 +27,14 @@ class ServerConnector:
 
     def set_user(self, user_login, user_password):
         result = requests.post(f"{self.url}/accounts/auth",
-                              json={'user_id': user_login,
+                              json={'login': user_login,
                                     'password': user_password}).json()
-        if result['status'] == 'error':
-            if result['message'] == 'wrong user or password':
-                raise SecurityError
-            raise Exception
-        self.user_id = result['id']
+        print(result)
+        print("_________________")
+        if result["auth"] == "rejected":
+            raise SecurityError
+
+        self.user_id = result['auth']
         self.user_login = user_login
         self.user_password = user_password
 
