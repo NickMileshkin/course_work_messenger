@@ -19,8 +19,9 @@ class RegistrationWindow(QtWidgets.QDialog, Ui_RegistrationWindow):  # клас�
     def registration_acc(self):
         self.login = self.lineEdit_login.text()
         self.password = self.lineEdit_password.text()
-        if self.server.add_new_user(self.login, self.password):
-            self.close()
+        if len(self.login) > 5 and len(self.password) > 8:
+            if self.server.add_new_user(self.login, self.password):
+                self.close()
         else:
             print("Ты Чмо")
 
