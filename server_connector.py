@@ -29,13 +29,13 @@ class ServerConnector:
         result = requests.post(f"{self.url}/accounts/auth",
                               json={'login': user_login,
                                     'password': user_password}).json()
-        print(result)
-        print("_________________")
-        if result["auth"] == "rejected":
+        if result['status'] == "error":
             raise SecurityError
-
-        self.user_id = result['auth']
-        self.user_login = user_login
-        self.user_password = user_password
+        elif result['status'] == 'rejected':
+            raise SecurityError
+        else:
+            self.user_id = result['status']
+            self.user_login = user_login
+            self.user_password = user_password
 
 
