@@ -52,6 +52,16 @@ class AccountDatabase:
                            (new_login, account_id))
             connection.commit()
 
+    def check_password(self, account_id, password):
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            check = cursor.execute("""SELECT password FROM accounts WHERE id = ?""",
+                                   account_id).fetchone()[0]
+        if check == password:
+            return True
+        else:
+            return False
+
 
 class MessageDatabase:
 
@@ -61,15 +71,15 @@ class MessageDatabase:
             cursor = connection.cursor()
             cursor.execute("""CREATE TABLE IF NOT EXISTS messages (
                               id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                              sender TEXT NOT NULL,
-                              recipient TEXT NOT NULL,
+                              sender_id INTEGER NOT NULL,
+                              recipient_id INTEGER NOT NULL,
                               time INTEGER NOT NULL,
                               message TEXT NOT NULL);""")
             connection.commit()
         connection.close()
 
-    def send_message(self, sender, recipient, time, message):
+    def send_message(self, sender_id, recipient_id, time, message):
         pass
 
-    def synchronization(self, login):
+    def synchronization(self, user_id):
         pass

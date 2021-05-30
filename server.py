@@ -47,6 +47,8 @@ def change_password(account_id):
     if not request.is_json:
         return {"status": "error", "message": "request should be in json"}
     data = json.loads(request.data)
+    if not accDB.check_password(account_id, data["password"]):
+        return {"status": "error", "message": "password is not correct"}
     accDB.change_password(account_id, data["new_password"])
     return {"status": "ok"}
 
@@ -56,6 +58,8 @@ def change_login(account_id):
     if not request.is_json:
         return {"status": "error", "message": "request should be in json"}
     data = json.loads(request.data)
+    if not accDB.check_password(account_id, data["password"]):
+        return {"status": "error", "message": "password is not correct"}
     accDB.change_login(account_id, data["new_login"])
     return {"status": "ok"}
 
