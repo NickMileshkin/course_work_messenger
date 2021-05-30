@@ -51,3 +51,25 @@ class AccountDatabase:
             cursor.execute("""UPDATE accounts SET login = ? WHERE id = ?""",
                            (new_login, account_id))
             connection.commit()
+
+
+class MessageDatabase:
+
+    def __init__(self, database: str = "messages.sqlite"):
+        self._db = database
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            cursor.execute("""CREATE TABLE IF NOT EXISTS messages (
+                              id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                              sender TEXT NOT NULL,
+                              recipient TEXT NOT NULL,
+                              time INTEGER NOT NULL,
+                              message TEXT NOT NULL);""")
+            connection.commit()
+        connection.close()
+
+    def send_message(self, sender, recipient, time, message):
+        pass
+
+    def synchronization(self, login):
+        pass

@@ -1,9 +1,11 @@
 import json
 from flask import Flask, request
 from database import AccountDatabase
+from database import MessageDatabase
 
 app = Flask(__name__)
-db = AccountDatabase()
+accDB = AccountDatabase()
+msgDB = MessageDatabase()
 
 
 @app.route('/hello_world')
@@ -14,7 +16,7 @@ def hello_world():
 @app.route('/accounts', methods=['GET'])
 def get_accounts():
     result = [{"id": id_, "login": login, "password": password}
-              for id_, login, password in db.get_accounts()]
+              for id_, login, password in accDB.get_accounts()]
     print(result)
     return "db.get_accounts()"
 
@@ -24,7 +26,7 @@ def add_new_account():
     if not request.is_json:
         return {"status": "error", "message": "request should be in json"}
     data = json.loads(request.data)
-    db.add_new_account(data["login"], data["password"])
+    accDB.add_new_account(data["login"], data["password"])
     return {"status": "ok"}
 
 
@@ -33,7 +35,7 @@ def get_authorization():
     if not request.is_json:
         return {"status": "error", "message": "request should be in json"}
     data = json.loads(request.data)
-    result = db.get_authorization(data["login"], data["password"])
+    result = accDB.get_authorization(data["login"], data["password"])
     if result:
         return {"auth": result}
     else:
@@ -45,7 +47,7 @@ def change_password(account_id):
     if not request.is_json:
         return {"status": "error", "message": "request should be in json"}
     data = json.loads(request.data)
-    db.change_password(account_id, data["new_password"])
+    accDB.change_password(account_id, data["new_password"])
     return {"status": "ok"}
 
 
@@ -54,7 +56,7 @@ def change_login(account_id):
     if not request.is_json:
         return {"status": "error", "message": "request should be in json"}
     data = json.loads(request.data)
-    db.change_login(account_id, data["new_login"])
+    accDB.change_login(account_id, data["new_login"])
     return {"status": "ok"}
 
 
