@@ -65,7 +65,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.textEdit_message.setEnabled(False)  # Отключает возможность ввода сообщения
         self.btn_search_login.clicked.connect(self.search_account)
         self.label_user_name.setText(self.user_login)
-        self.label_iser_id.setText("#" + str(self.user_id))
+        self.label_iser_id.setText("# " + str(self.user_id))
 
     # функция отправки сообщения
     def send_message(self):
