@@ -177,8 +177,8 @@ if __name__ == '__main__':
             connector.set_user(authorization_window.login, authorization_window.password)
         except SecurityError:
             error_box = QtWidgets.QErrorMessage()
-            error_box.showMessage("Check your credentials and try again!")
-            error_box.setWindowTitle("Security error")
+            error_box.showMessage("Проверьте правильность логина и пароля!")
+            error_box.setWindowTitle("Неправильный логин или пароль")
             error_box.exec()
             sys.exit(1)
         main_window = MainPage(connector)
