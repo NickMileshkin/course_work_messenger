@@ -1,4 +1,5 @@
 import sys  # sys нужен для передачи argv в QApplication
+from server_connector import ServerConnector, SecurityError
 from PyQt5 import QtWidgets, QtCore
 from datetime import datetime
 from Interface.registration import Ui_RegistrationWindow  # Это наш конвертированный файл дизайна
@@ -6,40 +7,43 @@ from Interface.authorization import Ui_AuthorizationWindow
 from Interface.main_page import Ui_MainWindow
 
 
-class RegistrationWindow(QtWidgets.QMainWindow, Ui_RegistrationWindow):  # класс, отвечающий за окно регистрации
-    def __init__(self):
+class RegistrationWindow(QtWidgets.QDialog, Ui_RegistrationWindow):  # класс, отвечающий за окно регистрации
+    def __init__(self, server: ServerConnector):
         super().__init__()
+        self.server = server
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
         self.btn_registration.clicked.connect(self.registration_acc)
-        self.label_2.clicked.connect(self.go_to_authorization_window)
-        self.label_2.clicked.connect(self.close)
-        self.authorization_window = AuthorizationWindow()
+        self.login = None
+        self.password = None
 
     def registration_acc(self):
-        login = (self.line_edit_login.text())
-        password = (self.line_edit_password.text())
-        if (login != '') and (password != ''):
-            print("login = ", login)
-            print("password = ", password)
-
-    def go_to_authorization_window(self):
-        self.authorization_window.show()
+        self.login = self.lineEdit_login.text()
+        self.password = self.lineEdit_password.text()
+        if self.server.add_new_user(self.login, self.password):
+            self.close()
+        else:
+            print("Ты Чмо")
 
 
-class AuthorizationWindow(QtWidgets.QMainWindow, Ui_AuthorizationWindow):  # класс, отвечающий за окно авторизации
+class AuthorizationWindow(QtWidgets.QDialog, Ui_AuthorizationWindow):  # класс, отвечающий за окно авторизации
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.is_accepted = None
+        self.label_2.clicked.connect(self.go_to_registration_window)
         self.btn_authorization.clicked.connect(self.authorization_acc)
-        self.btn_authorization.clicked.connect(self.close)
-        global main_window
-        main_window = MainPage()
-
+        self.login = None
+        self.password = None
     def authorization_acc(self):
-        login = (self.line_edit_login.text())
-        password = (self.line_edit_password.text())
-        if (login != '') and (password != ''):
-            main_window.show()
+        self.login = (self.lineEdit_login.text())
+        self.password = (self.lineEdit_password.text())
+        if (self.login != '') and (self.password != ''):
+            self.is_accepted = True
+            self.close()
+
+    def go_to_registration_window(self):
+        registration_window = RegistrationWindow(connector)
+        registration_window.exec()
 
 
 class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвечающий за главное окно
@@ -54,6 +58,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.btn_send_message.clicked.connect(self.send_message)
         self.textEdit_message.setEnabled(False)  # Отключает возможность ввода сообщения
         self.btn_search_login.clicked.connect(self.search_account)
+        self.label_user_name.setText(authorization_window.lineEdit_login.text())
 
     # функция отправки сообщения
     def send_message(self):
@@ -152,14 +157,16 @@ class Dialog(ClickableWidget):  # Класс диалог
 
 
 if __name__ == '__main__':
+
     app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
-    """x = input()
-    if x == "reg":
-        registration_window = RegistrationWindow()
-        registration_window.show()  # Показываем окно
-    else:
+    connector = ServerConnector("http://127.0.0.1", 5000)
+
+    authorization_window = AuthorizationWindow()
+    authorization_window.exec()
+    main_window = MainPage()
+    """if authorization_window.is_accepted:
+        try:
+            connector.add_new_user(authorization_window.)
         main_window = MainPage()
         main_window.show()"""
-    main_window = MainPage()
-    main_window.show()
     app.exec_()  # то запускаем функцию main()
