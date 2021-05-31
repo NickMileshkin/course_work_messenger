@@ -86,7 +86,7 @@ def create_new_dialog(user1_id, user2_id):
     if result:
         return {"status": "ok"}
     else:
-        return {"status": "error", "message": "dialog is already exist"}
+        return {"status": "error", "message": "dialog is already exist or users does not"}
 
 
 if __name__ == '__main__':

@@ -80,7 +80,9 @@ class AccountDatabase:
                                     (user1_id, user2_id)).fetchone()
             check2 = cursor.execute("""SELECT dialog_id FROM dialogs WHERE user2_id = ? AND user1_id = ?""",
                                     (user1_id, user2_id)).fetchone()
-            if (check1 is not None) or (check2 is not None):
+            check3 = cursor.execute("""SELECT account_id FROM accounts WHERE account_id = ? OR account_id = ?""",
+                                    (user1_id, user2_id)).fetchall()
+            if (check1 is not None) or (check2 is not None) or (len(check3) < 2):
                 return False
             else:
                 cursor.execute("""INSERT INTO dialogs (user1_id, user2_id)
