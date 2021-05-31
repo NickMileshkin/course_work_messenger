@@ -22,11 +22,11 @@ class Ui_MainWindow(object):
         self.label_user_name.setObjectName("label_user_name")
         self.verticalLayout_2.addWidget(self.label_user_name)
 
-        self.label_iser_id = QtWidgets.QLabel(self.centralwidget)
-        self.label_iser_id.setMinimumSize(QtCore.QSize(15, 15))
-        self.label_iser_id.setMaximumSize(QtCore.QSize(1000, 15))
-        self.label_iser_id.setObjectName("label_iser_id")
-        self.verticalLayout_2.addWidget(self.label_iser_id)
+        self.label_user_id = QtWidgets.QLabel(self.centralwidget)
+        self.label_user_id.setMinimumSize(QtCore.QSize(15, 15))
+        self.label_user_id.setMaximumSize(QtCore.QSize(1000, 15))
+        self.label_user_id.setObjectName("label_iser_id")
+        self.verticalLayout_2.addWidget(self.label_user_id)
 
         self.gridLayout.addLayout(self.verticalLayout_2, 2, 1, 1, 1)
         self.verticalLayout = QtWidgets.QVBoxLayout()
@@ -164,4 +164,4 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label_user_name.setText(_translate("MainWindow", "TextLabel"))
-        self.label_iser_id.setText(_translate("MainWindow", "TextLabel"))
+        self.label_user_id.setText(_translate("MainWindow", "TextLabel"))
