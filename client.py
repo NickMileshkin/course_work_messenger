@@ -1,4 +1,7 @@
 import sys  # sys нужен для передачи argv в QApplication
+
+import requests.exceptions
+
 from server_connector import ServerConnector, SecurityError
 from PyQt5 import QtWidgets, QtCore
 from datetime import datetime
@@ -232,12 +235,16 @@ if __name__ == '__main__':
     if authorization_window.is_accepted:
         try:
             connector.set_user(authorization_window.login, authorization_window.password)
+        except requests.exceptions.ConnectionError:
+            print('Сервер мёртв')
+            sys.exit(1)
         except SecurityError:
             error_box = QtWidgets.QErrorMessage()
             error_box.showMessage("Проверьте правильность логина и пароля!")
             error_box.setWindowTitle("Неправильный логин или пароль")
             error_box.exec()
             sys.exit(1)
+
         authorization_window.close()
         main_window = MainPage(connector)
         main_window.show()
