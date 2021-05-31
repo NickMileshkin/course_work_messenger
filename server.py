@@ -67,7 +67,7 @@ def send_message():
     if not request.is_json:
         return {"status": "error", "message": "request should be in json"}
     data = json.loads(request.data)
-    accDB.send_message(data["sender_id"], data["recipient_id"], data["time"], data["message"])
+    accDB.send_message(data["account_id"], data["dialog_id"], data["time"], data["message"])
     return {"status": "ok"}
 
 
@@ -78,6 +78,15 @@ def get_new_messages(account_id):
     #data = json.loads(request.data)
     accDB.get_new_messages(account_id)
     return {"status": "ok"}
+
+
+@app.route('/dialogs/<int:user1_id>/<int:user2_id>', methods=['GET'])
+def create_new_dialog(user1_id, user2_id):
+    result = accDB.create_new_dialog(user1_id, user2_id)
+    if result:
+        return {"status": "ok"}
+    else:
+        return {"status": "error", "message": "dialog is already exist"}
 
 
 if __name__ == '__main__':
