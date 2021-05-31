@@ -36,8 +36,11 @@ class AccountDatabase:
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
             result = cursor.execute("""SELECT login FROM accounts WHERE account_id = ?""",
-                                    (account_id,)).fetchone()[0]
-        return result
+                                    (account_id,)).fetchone()
+        if result is None:
+            return False
+        else:
+            return result[0]
 
     def add_new_account(self, login, password):
         with sqlite3.connect(self._db) as connection:

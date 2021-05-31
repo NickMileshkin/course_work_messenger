@@ -22,7 +22,10 @@ def get_accounts():
 @app.route('/accounts/<int:account_id>', methods=['GET'])
 def get_account_info(account_id):
     result = accDB.get_account_info(account_id)
-    return {"login": result}
+    if result:
+        return {"login": result}
+    else:
+        return {"status": "error", "message": "account does not exist"}
 
 
 @app.route('/accounts', methods=['POST'])
