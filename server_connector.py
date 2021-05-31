@@ -73,6 +73,11 @@ class ServerConnector:
             self.report_message = "Пароль изменён!"
             self.user_password = new_password
 
+    def find_user(self, account_id):
+        result = requests.get(f'{self.url}/accounts',
+                               json={'account_id': account_id}).json()
+        return result['login']
+
     def send_message(self, dialog_id, message):
         result = requests.post(f'{self.url}/messages',
                                json={'account_id': self.user_id,
@@ -90,4 +95,7 @@ class ServerConnector:
         result = requests.get(f'{self.url}/dialogs/{self.user_id}/{interlocutor_id}',
                                json={'user1_id': self.user_id,
                                      'user2_id': interlocutor_id}).json()
-        print(result)
+        if result['status'] == 'error':
+            self.report_message = "Диалог уже существует"
+        else:
+            self.report_message = "Диалог добавлен"
