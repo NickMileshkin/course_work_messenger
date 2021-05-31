@@ -35,14 +35,17 @@ class Ui_SettingWindow(object):
         self.lineEdit_old_user_password = QtWidgets.QLineEdit(self.account_setting)
         self.lineEdit_old_user_password.setGeometry(QtCore.QRect(10, 100, 113, 20))
         self.lineEdit_old_user_password.setObjectName("lineEdit_3")
+        self.lineEdit_old_user_password.setEchoMode(QtWidgets.QLineEdit.Password)
 
         self.lineEdit_new_user_password_1 = QtWidgets.QLineEdit(self.account_setting)
         self.lineEdit_new_user_password_1.setGeometry(QtCore.QRect(140, 100, 131, 20))
         self.lineEdit_new_user_password_1.setObjectName("lineEdit_4")
+        self.lineEdit_new_user_password_1.setEchoMode(QtWidgets.QLineEdit.Password)
 
         self.lineEdit_new_user_password_2 = QtWidgets.QLineEdit(self.account_setting)
         self.lineEdit_new_user_password_2.setGeometry(QtCore.QRect(140, 130, 131, 20))
         self.lineEdit_new_user_password_2.setObjectName("lineEdit_5")
+        self.lineEdit_new_user_password_2.setEchoMode(QtWidgets.QLineEdit.Password)
 
         self.btn_new_password = QtWidgets.QPushButton(self.account_setting)
         self.btn_new_password.setGeometry(QtCore.QRect(280, 110, 101, 20))
