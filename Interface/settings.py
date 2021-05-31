@@ -47,6 +47,11 @@ class Ui_SettingWindow(object):
         self.btn_new_password = QtWidgets.QPushButton(self.account_setting)
         self.btn_new_password.setGeometry(QtCore.QRect(280, 110, 101, 20))
         self.btn_new_password.setObjectName("pushButton_2")
+
+        self.label_message = QtWidgets.QLabel(self.account_setting)
+        self.label_message.setGeometry(QtCore.QRect(20, 170, 351, 31))
+        self.label_message.setText("")
+        self.label_message.setObjectName("label_3")
         self.tabWidget.addTab(self.account_setting, "")
 
         self.tab_2 = QtWidgets.QWidget()
