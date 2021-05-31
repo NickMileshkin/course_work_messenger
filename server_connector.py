@@ -16,7 +16,7 @@ class ServerConnector:
         self.user_id = None
         self.user_login = None
         self.user_password = None
-        self.views = set()
+        self.report_message = None
 
         self._dialogs = []
         self._messages = []
@@ -43,27 +43,33 @@ class ServerConnector:
             self.user_password = user_password
 
     def change_login(self, new_login, user_password):
-
+        self.report_message = None
         result = requests.post(f"{self.url}/accounts/{self.user_id}/login",
                                json={'password': user_password,
                                      'new_login': new_login}).json()
         if result['status'] == "error":
-            raise Exception(result['message'])
-        elif result['status'] == 'rejected':
-            raise SecurityError
-        else:
-            self.user_login = new_login
-
-    def change_password(self, user_password, new_password):
-        result = requests.post(f'{self.url}/accounts/{int(self.user_id)}/password',
-                               json={'password': user_password,
-                                     'new_password': new_password}).json()
-        if result['status'] == "error":
             if result['message'] == 'request should be in json':
                 raise JsonError
             else:
-               raise SecurityError
+                self.report_message = "Ошибка! Введён не правильный пароль"
+                raise SecurityError
         else:
+            self.report_message = "Логин изменён"
+            self.user_login = new_login
+
+    def change_password(self, user_password, new_password):
+        self.report_message = None
+        result = requests.post(f'{self.url}/accounts/{int(self.user_id)}/password',
+                               json={'password': user_password,
+                                     'new_password': new_password}).json()
+        if result['status'] == 'error':
+            if result['message'] == 'request should be in json':
+                raise JsonError
+            else:
+                self.report_message = "Ошибка! Введён не правильный пароль"
+                raise SecurityError
+        else:
+            self.report_message = "Пароль изменён!"
             self.user_password = new_password
 
 
