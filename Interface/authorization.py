@@ -23,6 +23,7 @@ class Ui_AuthorizationWindow(object):
         self.lineEdit_password = QtWidgets.QLineEdit(Dialog)
         self.lineEdit_password.setGeometry(QtCore.QRect(70, 111, 150, 20))
         self.lineEdit_password.setObjectName("lineEdit_password")
+        self.lineEdit_password.setEchoMode(QtWidgets.QLineEdit.Password)
 
         self.lineEdit_login = QtWidgets.QLineEdit(Dialog)
         self.lineEdit_login.setGeometry(QtCore.QRect(70, 80, 150, 20))
