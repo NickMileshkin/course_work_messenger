@@ -60,6 +60,7 @@ class SettingsWindow(QtWidgets.QDialog, Ui_SettingWindow):
         self.new_login = None
 
     def set_new_password(self):
+        self.label_message.setText('')
         self.old_password = self.lineEdit_old_user_password.text()
         self.new_password_1 = self.lineEdit_new_user_password_1.text()
         self.new_password_2 = self.lineEdit_new_user_password_2.text()
@@ -67,22 +68,17 @@ class SettingsWindow(QtWidgets.QDialog, Ui_SettingWindow):
             try:
                 self.server.change_password(self.old_password, self.new_password_1)
             except SecurityError:
-                error_box = QtWidgets.QErrorMessage()
-                error_box.showMessage("Проверьте правильность и пароля!")
-                error_box.setWindowTitle("Неправильный пароль")
-                error_box.show()
+                self.label_message.setText(connector.report_message)
+
             self.lineEdit_old_user_password.clear()
             self.lineEdit_new_user_password_1.clear()
             self.lineEdit_new_user_password_2.clear()
             self.new_password_1 = None
             self.new_password_2 = None
             self.old_password = None
-            self.close()
+            self.label_message.setText(connector.report_message)
         else:
-            error_box = QtWidgets.QErrorMessage()
-            error_box.showMessage("Проверьте правильность ввода пароля!\n Пароль должен быть не менее 5 символов")
-            error_box.setWindowTitle("Неправильный пароль")
-            error_box.exec()
+            self.label_message.setText("Ошибка! Пароли не совпадают или длина нового пароля меньше 5")
 
     def set_new_login(self):
         self.new_login = self.lineEdit_new_login.text()
@@ -92,17 +88,15 @@ class SettingsWindow(QtWidgets.QDialog, Ui_SettingWindow):
             try:
                 self.server.change_login(self.new_login, self.accept_user_password)
             except SecurityError:
-                error_box = QtWidgets.QErrorMessage()
-                error_box.showMessage("Проверьте правильность и пароля!")
-                error_box.setWindowTitle("Неправильный пароль")
-                error_box.show()
+                self.label_message.setText(connector.report_message)
             self.lineEdit_user_password_login.clear()
             self.lineEdit_new_login.clear()
             self.accept_user_password = None
             self.new_login = None
-            print("pog")
+            self.label_message.setText(connector.report_message)
             main_window.label_user_name.setText(connector.user_login)
-            self.close()
+        else:
+            self.label_message.setText("Ошибка! Длина нового логина меньше 5")
 
 
 class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвечающий за главное окно
