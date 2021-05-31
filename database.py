@@ -32,6 +32,13 @@ class AccountDatabase:
                                        FROM accounts""").fetchall()
         return result
 
+    def get_account_info(self, account_id):
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            result = cursor.execute("""SELECT login FROM accounts WHERE account_id = ?""",
+                                    (account_id,)).fetchone()[0]
+        return result
+
     def add_new_account(self, login, password):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()

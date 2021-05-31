@@ -19,6 +19,12 @@ def get_accounts():
     return "db.get_accounts()"
 
 
+@app.route('/accounts/<int:account_id>', methods=['GET'])
+def get_account_info(account_id):
+    result = accDB.get_account_info(account_id)
+    return {"login": result}
+
+
 @app.route('/accounts', methods=['POST'])
 def add_new_account():
     if not request.is_json:
