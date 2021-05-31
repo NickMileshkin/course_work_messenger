@@ -5,7 +5,7 @@ from datetime import datetime
 from Interface.registration import Ui_RegistrationWindow  # Это наш конвертированный файл дизайна
 from Interface.authorization import Ui_AuthorizationWindow
 from Interface.main_page import Ui_MainWindow
-
+from Interface.settings import Ui_SettingWindow
 
 class RegistrationWindow(QtWidgets.QDialog, Ui_RegistrationWindow):  # класс, отвечающий за окно регистрации
     def __init__(self, server: ServerConnector):
@@ -22,8 +22,6 @@ class RegistrationWindow(QtWidgets.QDialog, Ui_RegistrationWindow):  # клас�
         if len(self.login) >= 5 and len(self.password) >= 5:
             if self.server.add_new_user(self.login, self.password):
                 self.close()
-        else:
-            print("Ты Чмо")
 
 
 class AuthorizationWindow(QtWidgets.QDialog, Ui_AuthorizationWindow):  # класс, отвечающий за окно авторизации
@@ -48,6 +46,65 @@ class AuthorizationWindow(QtWidgets.QDialog, Ui_AuthorizationWindow):  # кла�
         registration_window.exec()
 
 
+class SettingsWindow(QtWidgets.QDialog, Ui_SettingWindow):
+    def __init__(self, server: ServerConnector):
+        super().__init__()
+        self.server = server
+        self.setupUi(self)
+        self.btn_new_password.clicked.connect(self.set_new_password)
+        self.btn_new_login.clicked.connect(self.set_new_login)
+        self.new_password_1 = None
+        self.new_password_2 = None
+        self.old_password = None
+        self.accept_user_password = None
+        self.new_login = None
+
+    def set_new_password(self):
+        self.old_password = self.lineEdit_old_user_password.text()
+        self.new_password_1 = self.lineEdit_new_user_password_1.text()
+        self.new_password_2 = self.lineEdit_new_user_password_2.text()
+        if self.new_password_1 == self.new_password_2 and len(self.new_password_1) >= 5:
+            try:
+                self.server.change_password(self.old_password, self.new_password_1)
+            except SecurityError:
+                error_box = QtWidgets.QErrorMessage()
+                error_box.showMessage("Проверьте правильность и пароля!")
+                error_box.setWindowTitle("Неправильный пароль")
+                error_box.show()
+            self.lineEdit_old_user_password.clear()
+            self.lineEdit_new_user_password_1.clear()
+            self.lineEdit_new_user_password_2.clear()
+            self.new_password_1 = None
+            self.new_password_2 = None
+            self.old_password = None
+            self.close()
+        else:
+            error_box = QtWidgets.QErrorMessage()
+            error_box.showMessage("Проверьте правильность ввода пароля!\n Пароль должен быть не менее 5 символов")
+            error_box.setWindowTitle("Неправильный пароль")
+            error_box.exec()
+
+    def set_new_login(self):
+        self.new_login = self.lineEdit_new_login.text()
+        self.accept_user_password = self.lineEdit_user_password_login.text()
+
+        if len(self.new_login) >= 5:
+            try:
+                self.server.change_login(self.new_login, self.accept_user_password)
+            except SecurityError:
+                error_box = QtWidgets.QErrorMessage()
+                error_box.showMessage("Проверьте правильность и пароля!")
+                error_box.setWindowTitle("Неправильный пароль")
+                error_box.show()
+            self.lineEdit_user_password_login.clear()
+            self.lineEdit_new_login.clear()
+            self.accept_user_password = None
+            self.new_login = None
+            print("pog")
+            main_window.label_user_name.setText(connector.user_login)
+            self.close()
+
+
 class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвечающий за главное окно
     def __init__(self, server: ServerConnector):
         super().__init__()
@@ -65,7 +122,8 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.textEdit_message.setEnabled(False)  # Отключает возможность ввода сообщения
         self.btn_search_login.clicked.connect(self.search_account)
         self.label_user_name.setText(self.user_login)
-        self.label_iser_id.setText("# " + str(self.user_id))
+        self.label_user_id.setText("# " + str(self.user_id))
+        self.btn_settings.clicked.connect(self.open_setting)
 
     # функция отправки сообщения
     def send_message(self):
@@ -100,6 +158,10 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     # функция открытия окна с поиском аккаунта
     def search_account(self):
         pass
+
+    def open_setting(self):
+        settings_window = SettingsWindow(self.server)
+        settings_window.exec()
 
 
 class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов, на которые можно нажимать
@@ -181,6 +243,7 @@ if __name__ == '__main__':
             error_box.setWindowTitle("Неправильный логин или пароль")
             error_box.exec()
             sys.exit(1)
+        authorization_window.close()
         main_window = MainPage(connector)
         main_window.show()
     app.exec_()  # то запускаем функцию main()
