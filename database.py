@@ -11,6 +11,13 @@ class AccountDatabase:
                               id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                               login TEXT NOT NULL,
                               password TEXT NOT NULL);""")
+            cursor.execute("""CREATE TABLE IF NOT EXISTS messages (
+                              id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                              sender_id INTEGER NOT NULL,
+                              recipient_id INTEGER NOT NULL,
+                              time INTEGER NOT NULL,
+                              message TEXT NOT NULL,
+                              is_new BOOLEAN NOT NULL);""")
             connection.commit()
         connection.close()
 
@@ -62,23 +69,6 @@ class AccountDatabase:
         else:
             return False
 
-
-class MessageDatabase:
-
-    def __init__(self, database: str = "messages.sqlite"):
-        self._db = database
-        with sqlite3.connect(self._db) as connection:
-            cursor = connection.cursor()
-            cursor.execute("""CREATE TABLE IF NOT EXISTS messages (
-                              id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                              sender_id INTEGER NOT NULL,
-                              recipient_id INTEGER NOT NULL,
-                              time INTEGER NOT NULL,
-                              message TEXT NOT NULL,
-                              is_new BOOLEAN NOT NULL);""")
-            connection.commit()
-        connection.close()
-
     def send_message(self, sender_id, recipient_id, time, message):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
@@ -92,7 +82,6 @@ class MessageDatabase:
     def get_new_messages(self, user_id):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
-            new_msg = cursor.execute("""SELECT sender_id, time, message, FROM messages 
-                                        WHERE recipient_id = ? AND is_new = ?""",
-                                        (user_id, True)).fetchall()
+            new_msg = cursor.execute("""SELECT sender_id, time, message FROM messages 
+                                        WHERE recipient_id = ? AND is_new = ?""", (user_id, True)).fetchall()
             print(new_msg)

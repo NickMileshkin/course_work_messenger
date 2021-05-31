@@ -1,11 +1,9 @@
 import json
 from flask import Flask, request
 from database import AccountDatabase
-from database import MessageDatabase
 
 app = Flask(__name__)
 accDB = AccountDatabase()
-msgDB = MessageDatabase()
 
 
 @app.route('/hello_world')
@@ -61,6 +59,24 @@ def change_login(account_id):
     if not accDB.check_password(account_id, data["password"]):
         return {"status": "error", "message": "password is not correct"}
     accDB.change_login(account_id, data["new_login"])
+    return {"status": "ok"}
+
+
+@app.route('/messages', methods=['POST'])
+def send_message():
+    if not request.is_json:
+        return {"status": "error", "message": "request should be in json"}
+    data = json.loads(request.data)
+    accDB.send_message(data["sender_id"], data["recipient_id"], data["time"], data["message"])
+    return {"status": "ok"}
+
+
+@app.route('/messages/<int:account_id>', methods=['GET'])
+def get_new_messages(account_id):
+    #if not request.is_json:
+    #    return {"status": "error", "message": "request should be in json"}
+    #data = json.loads(request.data)
+    accDB.get_new_messages(account_id)
     return {"status": "ok"}
 
 
