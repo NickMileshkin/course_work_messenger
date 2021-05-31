@@ -7,6 +7,7 @@ from Interface.authorization import Ui_AuthorizationWindow
 from Interface.main_page import Ui_MainWindow
 from Interface.settings import Ui_SettingWindow
 
+
 class RegistrationWindow(QtWidgets.QDialog, Ui_RegistrationWindow):  # класс, отвечающий за окно регистрации
     def __init__(self, server: ServerConnector):
         super().__init__()
