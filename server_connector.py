@@ -76,7 +76,11 @@ class ServerConnector:
     def find_user(self, account_id):
         result = requests.get(f'{self.url}/accounts',
                                json={'account_id': account_id}).json()
-        return result['login']
+        if result['status'] == 'error':
+            self.report_message = 'Такого аккаунта не существует'
+            return 'None'
+        else:
+            return result['login']
 
     def send_message(self, dialog_id, message):
         result = requests.post(f'{self.url}/messages',
