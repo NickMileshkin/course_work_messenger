@@ -112,16 +112,18 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.client_db = server.client_db
         self.active_dialog = None  # хранит номер активного диалога
         self.dialogs = []
-        self.server.add_dialogs()
-        dial = self.server.client_db.get_dialogs()
-        for i in range(len(self.server.client_db.get_dialogs())):
-            self.add_dialog(dial[i][0], dial[i][1])
 
-        #self.get_all_message()
         self.user_id = server.user_id
         self.user_login = server.user_login
         self.user_password = server.user_password
 
+        self.server.add_dialogs()
+
+        dial = self.server.client_db.get_dialogs()
+        for i in range(len(self.server.client_db.get_dialogs())):
+            self.add_dialog(dial[i][0], dial[i][1])
+
+        self.server.get_all_messages()
         self.btn_send_message.clicked.connect(self.send_message)
         self.textEdit_message.setEnabled(False)  # Отключает возможность ввода сообщения
         self.btn_search_user.clicked.connect(self.find_user)
@@ -135,8 +137,9 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         time = (str(datetime.now()).split('.')[0])
         if message_text != '' and not(message_text.isspace()):
             self.server.send_message(self.active_dialog.id, message_text, time)
-            new_message = Message(message_text, time, self.user_id)
+            new_message = Message(message_text, time, self.user_id, False)
             new_message.clicked.connect(new_message.p)
+            self.client_db.add_message(self.user_id, self.active_dialog.id, time, message_text, False)
             self.active_dialog.messages.append(new_message)
             self.scrollLayout_message.addRow(new_message)
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
@@ -155,7 +158,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             self.send_message()
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
         if event.key() == 61:  # условия для проверки работы добавления диалогов
-            print(self.server.client_db.get_dialogs())
+            print(self.client_db.get_messages(self.active_dialog.id))
 
     # функция открытия окна с поиском аккаунта
     def find_user(self):
@@ -184,11 +187,6 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         settings_window = SettingsWindow(self.server)
         settings_window.exec()
 
-    """def get_all_message(self):
-        result = self.server.get_all_messages()
-        for i in range((len(result)-1)//5):
-            self.dialogs"""
-
 
 class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов, на которые можно нажимать
     clicked = QtCore.pyqtSignal()
@@ -199,12 +197,13 @@ class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов,
 
 
 class Message(ClickableWidget):  # класс сообшения
-    def __init__(self, message_text, message_time, message_sender):
+    def __init__(self, message_text, message_time, message_sender, is_new):
         super(Message, self).__init__()
         if message_sender == main_window.user_id:
             self.name = QtWidgets.QLabel("Вы")
         else:
-            self.name = main_window.active_dialog.interlocutor_login
+            self.name = QtWidgets.QLabel(main_window.active_dialog.interlocutor_login)
+        self.is_new = is_new
         self.message_text = QtWidgets.QLabel(message_text)
         self.message_text.setWordWrap(True)
         self.message_time = QtWidgets.QLabel(message_time)
@@ -240,20 +239,20 @@ class Dialog(ClickableWidget):  # Класс диалог
     def open_dialogs(self):  # функция отвечающая за открытие экземпляра класса диалог
         main_window.textEdit_message.clear()
         main_window.active_dialog = self
-        print(1)
+        messages = main_window.client_db.get_messages(self.id)
+        for i in range(len(messages)):
+            new_message = Message(messages[i][2], messages[i][1], messages[i][0], messages[i][3])
+            self.messages.append(new_message)
         for i in reversed(range(main_window.scrollLayout_message.count())):
             widgetToRemove = main_window.scrollLayout_message.itemAt(i).widget()
             # remove it from the layout list
             main_window.scrollLayout_message.removeWidget(widgetToRemove)
             # remove it from the gui
             widgetToRemove.setParent(None)
-        print(2)
         for i in range(len(self.messages)):
             main_window.scrollLayout_message.addRow(self.messages[i])
-        print(3)
         for i in range(len(main_window.dialogs)):
             main_window.dialogs[i].container.setStyleSheet("background-color:white;")
-        print(4)
         self.container.setStyleSheet("background-color:blue;")
         main_window.textEdit_message.setEnabled(True)
         main_window.vbar_scrollArea_message.setValue(main_window.vbar_scrollArea_message.maximum())
