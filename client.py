@@ -118,7 +118,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.dialogs = []  # хранит экземпляры Класса Dialog
         self.btn_send_message.clicked.connect(self.send_message)
         self.textEdit_message.setEnabled(False)  # Отключает возможность ввода сообщения
-        self.btn_search_login.clicked.connect(self.search_account)
+        self.btn_search_user.clicked.connect(self.find_user)
         self.label_user_name.setText(self.user_login)
         self.label_user_id.setText("# " + str(self.user_id))
         self.btn_settings.clicked.connect(self.open_setting)
@@ -154,8 +154,27 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             print(self.server.user_id)
 
     # функция открытия окна с поиском аккаунта
-    def search_account(self):
-        pass
+    def find_user(self):
+        user_id = self.textEdit_search.text()
+        user_login = None
+        new_dialog = None
+        if user_id != '':
+            user_login = self.server.find_user(int(user_id))
+        if user_login != 'None':
+            new_dialog = self.server.create_new_dialog(user_id)
+            if new_dialog != 'error':
+                self.add_dialog()
+            else:
+                message = QtWidgets.QMessageBox()
+                message.setText('Диалог уже существует')
+                message.setWindowTitle('Попытка создать уже существующий диалог')
+                message.exec()
+        else:
+            message = QtWidgets.QMessageBox()
+            message.setText('Аккаунта с таким ID не существует')
+            message.setWindowTitle('Аккаунта не существует')
+            message.exec()
+        self.textEdit_search.setText("")
 
     def open_setting(self):
         settings_window = SettingsWindow(self.server)
@@ -231,7 +250,7 @@ if __name__ == '__main__':
     connector = ServerConnector("http://127.0.0.1", 5000)
 
     authorization_window = AuthorizationWindow()
-    authorization_window.exec()
+    authorization_window.exec_()
     if authorization_window.is_accepted:
         try:
             connector.set_user(authorization_window.login, authorization_window.password)
@@ -243,9 +262,8 @@ if __name__ == '__main__':
             error_box.showMessage("Проверьте правильность логина и пароля!")
             error_box.setWindowTitle("Неправильный логин или пароль")
             error_box.exec()
-            sys.exit(1)
+            sys.exit()
 
-        authorization_window.close()
         main_window = MainPage(connector)
         main_window.show()
     app.exec_()  # то запускаем функцию main()
