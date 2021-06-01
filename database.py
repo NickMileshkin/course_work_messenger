@@ -114,6 +114,15 @@ class AccountDatabase:
     def get_new_messages(self, user_id):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
-            new_msg = cursor.execute("""SELECT account_id, time, message FROM messages 
-                                        WHERE recipient_id = ? AND is_new = ?""", (user_id, True)).fetchall()
-            print(new_msg)
+            dialogs = cursor.execute("""SELECT dialog_id FROM dialogs WHERE user1_id = ? OR user2_id = ?""",
+                                     (user_id, user_id)).fetchall()
+            print(dialogs)
+
+    def get_dialogs(self, user_id):
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            dialogs = cursor.execute("""SELECT dialog_id, user1_id FROM dialogs 
+                                        WHERE user2_id = ?""", (user_id,)).fetchall()
+            dialogs += cursor.execute("""SELECT dialog_id, user2_id FROM dialogs 
+                                         WHERE user1_id = ?""", (user_id,)).fetchall()
+            return dialogs

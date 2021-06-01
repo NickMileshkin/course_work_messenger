@@ -98,5 +98,26 @@ def create_new_dialog(user1_id, user2_id):
         return {"status": "error", "message": "dialog is already exist or users does not"}
 
 
+@app.route('/dialogs/<int:user_id>', methods=['POST'])
+def get_dialogs(user_id):
+    if not request.is_json:
+        return {"status": "error", "message": "request should be in json"}
+    data = json.loads(request.data)
+    if not accDB.check_password(user_id, data["password"]):
+        return {"status": "error", "message": "password is not correct"}
+    result = accDB.get_dialogs(user_id)
+    if len(result) > 1:
+        output = (("status", "ok"),
+                  ("dialog_id0", result[0][0]),
+                  ("account_id0", result[0][1]))
+        for i in range(len(result)-1):
+            output += (("dialog_id"+str(i+1), result[i+1][0]),
+                       ("account_id"+str(i+1), result[i+1][1]))
+        return json.dumps(dict(output))
+    elif len(result) == 1:
+        return {"status": "ok", "dialog_id0": result[0][0], "account_id0": result[0][1]}
+    return {"status": "error", "message": "you do not have dialogs"}
+
+
 if __name__ == '__main__':
     app.run()
