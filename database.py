@@ -112,7 +112,6 @@ class AccountDatabase:
     def synchronization(self, user_id):
         pass
 
-    #fix this function -----------------------------------------------------------------------------------------------
     def get_all_messages(self, user_id):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
@@ -121,9 +120,22 @@ class AccountDatabase:
             messages = []
             if len(dialogs) > 0:
                 for i in range(len(dialogs)):
-                    messages += cursor.execute("""SELECT account_id, dialog_id, time, message, is_new FROM dialogs 
+                    messages += cursor.execute("""SELECT account_id, dialog_id, time, message, is_new FROM messages 
                                                   WHERE dialog_id = ?""", (dialogs[i][0],)).fetchall()
-            print(messages)
+            return messages
+
+    def get_new_messages(self, user_id):
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            dialogs = cursor.execute("""SELECT dialog_id FROM dialogs WHERE user1_id = ? OR user2_id = ?""",
+                                     (user_id, user_id)).fetchall()
+            messages = []
+            if len(dialogs) > 0:
+                for i in range(len(dialogs)):
+                    messages += cursor.execute("""SELECT account_id, dialog_id, time, message FROM messages 
+                                                  WHERE dialog_id = ? AND is_new = ?""",
+                                               (dialogs[i][0], True)).fetchall()
+            return messages
 
     def get_dialogs(self, user_id):
         with sqlite3.connect(self._db) as connection:

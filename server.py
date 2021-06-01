@@ -80,7 +80,6 @@ def send_message():
     return {"status": "ok"}
 
 
-#fix this function -------------------------------------------------------------------------------------------
 @app.route('/messages/<int:account_id>', methods=['POST'])
 def get_all_messages(account_id):
     if not request.is_json:
@@ -88,8 +87,51 @@ def get_all_messages(account_id):
     data = json.loads(request.data)
     if not accDB.check_password(account_id, data["password"]):
         return {"status": "error", "message": "password is not correct"}
-    accDB.get_all_messages(account_id)
-    return {"status": "ok"}
+    result = accDB.get_all_messages(account_id)
+    if len(result) > 0:
+        output = (("status", "ok"),
+                  ("account_id0", result[0][0]),
+                  ("dialog_id0", result[0][1]),
+                  ("time0", result[0][2]),
+                  ("message0", result[0][3]),
+                  ("is_new0", result[0][4]))
+        if len(result) > 1:
+            for i in range(len(result) - 1):
+                output += (("account_id" + str(i + 1), result[i + 1][0]),
+                           ("dialog_id" + str(i + 1), result[i + 1][1]),
+                           ("time" + str(i + 1), result[i + 1][2]),
+                           ("message" + str(i + 1), result[i + 1][3]),
+                           ("is_new" + str(i + 1), result[i + 1][4]))
+            return json.dumps(dict(output))
+        else:
+            return json.dumps(dict(output))
+    return {"status": "error", "message": "you do not have messages"}
+
+
+@app.route('/messages/<int:account_id>/new', methods=['POST'])
+def get_new_messages(account_id):
+    if not request.is_json:
+        return {"status": "error", "message": "request should be in json"}
+    data = json.loads(request.data)
+    if not accDB.check_password(account_id, data["password"]):
+        return {"status": "error", "message": "password is not correct"}
+    result = accDB.get_all_messages(account_id)
+    if len(result) > 0:
+        output = (("status", "ok"),
+                  ("account_id0", result[0][0]),
+                  ("dialog_id0", result[0][1]),
+                  ("time0", result[0][2]),
+                  ("message0", result[0][3]))
+        if len(result) > 1:
+            for i in range(len(result) - 1):
+                output += (("account_id" + str(i + 1), result[i + 1][0]),
+                           ("dialog_id" + str(i + 1), result[i + 1][1]),
+                           ("time" + str(i + 1), result[i + 1][2]),
+                           ("message" + str(i + 1), result[i + 1][3]))
+            return json.dumps(dict(output))
+        else:
+            return json.dumps(dict(output))
+    return {"status": "error", "message": "you do not have new messages"}
 
 
 @app.route('/dialogs/<int:user1_id>/<int:user2_id>', methods=['GET'])
