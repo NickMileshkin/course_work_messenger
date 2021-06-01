@@ -84,12 +84,13 @@ class ServerConnector:
         else:
             return result['login']
 
-    def send_message(self, dialog_id, message):
+    def send_message(self, dialog_id, message, time):
         result = requests.post(f'{self.url}/messages',
                                json={'account_id': self.user_id,
                                      'dialog_id': dialog_id,
-                                     'time': str(datetime.now().time()).split(".")[0],
-                                     'message': message}).json()
+                                     'time': time,
+                                     'message': message,
+                                     'password': self.user_password}).json()
 
         if result['status'] == 'error':
             if result['message'] == 'request should be in json':
@@ -116,3 +117,9 @@ class ServerConnector:
         for i in range((len(result)-1) // 2):
             self.dialogs.append(result["dialog_id" + str(i)])
             self.interlocutors_id.append(result["account_id"+str(i)])
+
+    def get_all_messages(self):
+        result = result = requests.post(f'{self.url}/messages/{self.user_id}',
+                                        json={'user_id': self.user_id,
+                                              'password': self.user_password}).json()
+        print(result)
