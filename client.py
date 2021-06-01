@@ -109,8 +109,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.setupUi(self)
         self.server = server
         self.prev_active_dialog = 0
-        self.active_dialog = 0  # хранит номер активного диалога
-        self.dialogs_count = 0
+        self.active_dialog = None  # хранит номер активного диалога
         self.dialogs = []
         self.server.get_dialogs()
         for i in range(len(server.dialogs)):
@@ -131,7 +130,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         if self.textEdit_message.text() != '' and not(self.textEdit_message.text().isspace()):
             new_message = Message()
             new_message.clicked.connect(new_message.p)
-            self.messages[self.active_dialog].append(new_message)
+            self.active_dialog.messages.append(new_message)
             self.scrollLayout_message.addRow(new_message)
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
 
@@ -140,7 +139,6 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     # функция добавления диалога
     def add_dialog(self, dialog_id, interlocutors_id):
         new_dialog = Dialog(dialog_id, interlocutors_id, self.server)
-        self.dialogs_count += 1
         new_dialog.clicked.connect(new_dialog.open_dialogs)
         self.dialogs.append(new_dialog)
         self.scrollLayout_dialogs.addRow(new_dialog)
@@ -229,22 +227,20 @@ class Dialog(ClickableWidget):  # Класс диалог
 
     def open_dialogs(self):  # функция отвечающая за открытие экземпляра класса диалог
         main_window.textEdit_message.clear()
+        main_window.active_dialog = self
         for i in reversed(range(main_window.scrollLayout_message.count())):
             widgetToRemove = main_window.scrollLayout_message.itemAt(i).widget()
             # remove it from the layout list
             main_window.scrollLayout_message.removeWidget(widgetToRemove)
             # remove it from the gui
             widgetToRemove.setParent(None)
-
         for i in range(len(self.messages)):
-            main_window.scrollLayout_message.addRow(self.messages)
+            main_window.scrollLayout_message.addRow(self.messages[i])
 
         for i in range(len(main_window.dialogs)):
             main_window.dialogs[i].container.setStyleSheet("background-color:white;")
-
         self.container.setStyleSheet("background-color:blue;")
         main_window.textEdit_message.setEnabled(True)
-        main_window.active_dialog = self.id
         main_window.vbar_scrollArea_message.setValue(main_window.vbar_scrollArea_message.maximum())
 
 
