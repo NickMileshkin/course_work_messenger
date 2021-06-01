@@ -25,13 +25,6 @@ class AccountDatabase:
             connection.commit()
         connection.close()
 
-    def get_accounts(self):
-        with sqlite3.connect(self._db) as connection:
-            cursor = connection.cursor()
-            result = cursor.execute("""SELECT account_id, login, password
-                                       FROM accounts""").fetchall()
-        return result
-
     def get_account_info(self, account_id):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
@@ -142,3 +135,10 @@ class AccountDatabase:
             dialogs += cursor.execute("""SELECT dialog_id, user2_id FROM dialogs 
                                          WHERE user1_id = ?""", (user_id,)).fetchall()
             return dialogs
+
+    def read_this_dialog(self, dialog_id, account_id):
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            cursor.execute("""UPDATE messages SET is_new = ? WHERE dialog_id = ? AND account_id != ?""",
+                           (False, dialog_id, account_id))
+            connection.commit()

@@ -6,19 +6,6 @@ app = Flask(__name__)
 accDB = AccountDatabase()
 
 
-@app.route('/hello_world')
-def hello_world():
-    return 'Hello, World!'
-
-
-@app.route('/accounts', methods=['GET'])
-def get_accounts():
-    result = [{"id": id_, "login": login, "password": password}
-              for id_, login, password in accDB.get_accounts()]
-    print(result)
-    return {"status": "ok"}
-
-
 @app.route('/accounts/<int:account_id>', methods=['GET'])
 def get_account_info(account_id):
     result = accDB.get_account_info(account_id)
@@ -164,6 +151,17 @@ def get_dialogs(user_id):
     elif len(result) == 1:
         return {"status": "ok", "dialog_id0": result[0][0], "account_id0": result[0][1]}
     return {"status": "error", "message": "you do not have dialogs"}
+
+
+@app.route('/dialogs/<int:dialog_id>/read', methods=['POST'])
+def read_this_dialog(dialog_id):
+    if not request.is_json:
+        return {"status": "error", "message": "request should be in json"}
+    data = json.loads(request.data)
+    if not accDB.check_password(data["account_id"], data["password"]):
+        return {"status": "error", "message": "password is not correct"}
+    accDB.read_this_dialog(dialog_id, data["account_id"])
+    return {"status": "ok"}
 
 
 if __name__ == '__main__':
