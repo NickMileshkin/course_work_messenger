@@ -47,3 +47,10 @@ class ClientDatabase:
             messages = cursor.execute("""SELECT account_id, time, message, is_new FROM messages 
                                                   WHERE dialog_id = ?""", (dialog_id,)).fetchall()
             return messages
+
+    def read_this_dialog(self, dialog_id):
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            cursor.execute("""UPDATE messages SET is_new = ? WHERE dialog_id = ?""",
+                           (False, dialog_id))
+            connection.commit()
