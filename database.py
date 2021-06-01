@@ -109,9 +109,6 @@ class AccountDatabase:
                               VALUES (?, ?, ?, ?, ?)""", (account_id, dialog_id, time, message, True))
             connection.commit()
 
-    def synchronization(self, user_id):
-        pass
-
     def get_all_messages(self, user_id):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()

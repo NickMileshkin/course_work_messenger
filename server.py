@@ -76,6 +76,8 @@ def send_message():
     if not request.is_json:
         return {"status": "error", "message": "request should be in json"}
     data = json.loads(request.data)
+    if not accDB.check_password(data["account_id"], data["password"]):
+        return {"status": "error", "message": "password is not correct"}
     accDB.send_message(data["account_id"], data["dialog_id"], data["time"], data["message"])
     return {"status": "ok"}
 
