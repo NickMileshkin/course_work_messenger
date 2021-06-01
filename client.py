@@ -128,17 +128,14 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     # функция отправки сообщения
     def send_message(self):
         message_text = self.textEdit_message.text()
-        time = str(datetime.now())
-        print(time)
+        time = (str(datetime.now()).split('.')[0])
         if message_text != '' and not(message_text.isspace()):
-            new_message = Message()
-            new_message.clicked.connect(new_message.p)
             self.server.send_message(self.active_dialog.id, message_text, time)
-            print(2)
+            new_message = Message(message_text, time, self.user_id)
+            new_message.clicked.connect(new_message.p)
             self.active_dialog.messages.append(new_message)
             self.scrollLayout_message.addRow(new_message)
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
-
         self.textEdit_message.clear()
 
     # функция добавления диалога
@@ -155,6 +152,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
         if event.key() == 61:  # условия для проверки работы добавления диалогов
             self.server.get_all_messages()
+            print(self.active_dialog.messages)
 
     # функция открытия окна с поиском аккаунта
     def find_user(self):
@@ -169,8 +167,8 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
                 self.add_dialog(new_dialog['dialog_id'], user_id)
             else:
                 message = QtWidgets.QMessageBox()
-                message.setText('Диалог уже существует')
-                message.setWindowTitle('Попытка создать уже существующий диалог')
+                message.setText('Попытка создать уже существующий диалог')
+                message.setWindowTitle('Диалог уже существует')
                 message.exec()
         else:
             message = QtWidgets.QMessageBox()
@@ -193,17 +191,19 @@ class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов,
 
 
 class Message(ClickableWidget):  # класс сообшения
-    def __init__(self):
+    def __init__(self, message_text, message_time, message_sender):
         super(Message, self).__init__()
-        self.name = QtWidgets.QLabel("You")
-        self.message_text = QtWidgets.QLabel(main_window.textEdit_message.text())
+        if message_sender == main_window.user_id:
+            self.name = QtWidgets.QLabel("Вы")
+        else:
+            self.name = main_window.active_dialog.interlocutor_login
+        self.message_text = QtWidgets.QLabel(message_text)
         self.message_text.setWordWrap(True)
-        self.message_time = QtWidgets.QLabel(str(datetime.now().time()).split(".")[0])
+        self.message_time = QtWidgets.QLabel(message_time)
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.name)
         layout.addWidget(self.message_text)
         layout.addWidget(self.message_time)
-
         self.setLayout(layout)
 
     def p(self):  # Временная заглушка функция выполняется при нажатии на сообщение
@@ -260,7 +260,10 @@ if __name__ == '__main__':
         try:
             connector.set_user(authorization_window.login, authorization_window.password)
         except requests.exceptions.ConnectionError:
-            print('Сервер мёртв')
+            message = QtWidgets.QMessageBox()
+            message.setText('Проверьте подключение к интернету и попробуйте попытку снова')
+            message.setWindowTitle('Сервер не отвечает')
+            message.exec()
             sys.exit(1)
         except SecurityError:
             error_box = QtWidgets.QErrorMessage()
