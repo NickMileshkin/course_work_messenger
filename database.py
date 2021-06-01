@@ -19,7 +19,7 @@ class AccountDatabase:
                               message_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                               account_id INTEGER NOT NULL,
                               dialog_id INTEGER NOT NULL,
-                              time INTEGER NOT NULL,
+                              time TEXT NOT NULL,
                               message TEXT NOT NULL,
                               is_new BOOLEAN NOT NULL);""")
             connection.commit()
