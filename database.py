@@ -25,13 +25,6 @@ class AccountDatabase:
             connection.commit()
         connection.close()
 
-    def get_accounts(self):
-        with sqlite3.connect(self._db) as connection:
-            cursor = connection.cursor()
-            result = cursor.execute("""SELECT account_id, login, password
-                                       FROM accounts""").fetchall()
-        return result
-
     def get_account_info(self, account_id):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()

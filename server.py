@@ -6,19 +6,6 @@ app = Flask(__name__)
 accDB = AccountDatabase()
 
 
-@app.route('/hello_world')
-def hello_world():
-    return 'Hello, World!'
-
-
-@app.route('/accounts', methods=['GET'])
-def get_accounts():
-    result = [{"id": id_, "login": login, "password": password}
-              for id_, login, password in accDB.get_accounts()]
-    print(result)
-    return {"status": "ok"}
-
-
 @app.route('/accounts/<int:account_id>', methods=['GET'])
 def get_account_info(account_id):
     result = accDB.get_account_info(account_id)
