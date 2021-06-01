@@ -112,7 +112,6 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.active_dialog = 0  # хранит номер активного диалога
         self.dialogs_count = 0
         self.dialogs = []
-        self.messages = [[]]
         self.server.get_dialogs()
         for i in range(len(server.dialogs)):
             self.add_dialog(server.dialogs[i], server.interlocutors_id[i])
@@ -142,7 +141,6 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     def add_dialog(self, dialog_id, interlocutors_id):
         new_dialog = Dialog(dialog_id, interlocutors_id, self.server)
         self.dialogs_count += 1
-        self.messages.append([])
         new_dialog.clicked.connect(new_dialog.open_dialogs)
         self.dialogs.append(new_dialog)
         self.scrollLayout_dialogs.addRow(new_dialog)
@@ -159,13 +157,13 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     def find_user(self):
         user_id = self.textEdit_search.text()
         user_login = None
-        new_dialog = None
         if user_id != '':
             user_login = self.server.find_user(int(user_id))
         if user_login != 'None':
             new_dialog = self.server.create_new_dialog(user_id)
-            if new_dialog != 'error':
-                self.add_dialog()
+            if new_dialog['status'] != 'error':
+                self.server.dialogs.append(new_dialog['dialog_id'])
+                self.add_dialog(new_dialog['dialog_id'], user_id)
             else:
                 message = QtWidgets.QMessageBox()
                 message.setText('Диалог уже существует')
