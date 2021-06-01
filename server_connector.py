@@ -19,8 +19,9 @@ class ServerConnector:
         self.user_password = None
         self.report_message = None
 
-        self._dialogs = []
-        self._messages = []
+        self.dialogs = []
+        self.interlocutors_id = []
+        self.messages = []
 
     def add_new_user(self, user_login, user_password):
         result = requests.post(f"{self.url}/accounts",
@@ -106,3 +107,11 @@ class ServerConnector:
         else:
             self.report_message = "Диалог добавлен"
             return result['status']
+
+    def get_dialogs(self):
+        result = requests.post(f'{self.url}/dialogs/{self.user_id}',
+                               json={'user_id': self.user_id,
+                                     'password': self.user_password}).json()
+        for i in range((len(result)-1) // 2):
+            self.dialogs.append(result["dialog_id" + str(i)])
+            self.interlocutors_id.append(result["account_id"+str(i)])
