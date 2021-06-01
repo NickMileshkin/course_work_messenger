@@ -39,7 +39,7 @@ class ServerConnector:
         elif result['status'] == 'rejected':
             raise SecurityError
         else:
-            self.user_id = result['status']
+            self.user_id = result['id']
             self.user_login = user_login
             self.user_password = user_password
 
@@ -74,7 +74,8 @@ class ServerConnector:
             self.user_password = new_password
 
     def find_user(self, account_id):
-        result = requests.get(f'{self.url}/accounts',
+        self.report_message = None
+        result = requests.get(f'{self.url}/accounts/{account_id}',
                                json={'account_id': account_id}).json()
         if result['status'] == 'error':
             self.report_message = 'Такого аккаунта не существует'
@@ -101,5 +102,7 @@ class ServerConnector:
                                      'user2_id': interlocutor_id}).json()
         if result['status'] == 'error':
             self.report_message = "Диалог уже существует"
+            return result['status']
         else:
             self.report_message = "Диалог добавлен"
+            return result['status']
