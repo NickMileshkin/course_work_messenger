@@ -98,7 +98,9 @@ class AccountDatabase:
                 cursor.execute("""INSERT INTO dialogs (user1_id, user2_id)
                                   VALUES (?, ?)""", (user1_id, user2_id))
                 connection.commit()
-                return True
+                result = cursor.execute("""SELECT dialog_id FROM dialogs WHERE user1_id = ? AND user2_id = ?""",
+                                        (user1_id, user2_id)).fetchone()[0]
+                return result
 
     def send_message(self, account_id, dialog_id, time, message):
         with sqlite3.connect(self._db) as connection:
@@ -110,13 +112,18 @@ class AccountDatabase:
     def synchronization(self, user_id):
         pass
 
-    #fix this function
-    def get_new_messages(self, user_id):
+    #fix this function -----------------------------------------------------------------------------------------------
+    def get_all_messages(self, user_id):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
             dialogs = cursor.execute("""SELECT dialog_id FROM dialogs WHERE user1_id = ? OR user2_id = ?""",
                                      (user_id, user_id)).fetchall()
-            print(dialogs)
+            messages = []
+            if len(dialogs) > 0:
+                for i in range(len(dialogs)):
+                    messages += cursor.execute("""SELECT account_id, dialog_id, time, message, is_new FROM dialogs 
+                                                  WHERE dialog_id = ?""", (dialogs[i][0],)).fetchall()
+            print(messages)
 
     def get_dialogs(self, user_id):
         with sqlite3.connect(self._db) as connection:

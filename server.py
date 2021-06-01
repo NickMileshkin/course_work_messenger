@@ -80,12 +80,15 @@ def send_message():
     return {"status": "ok"}
 
 
-@app.route('/messages/<int:account_id>', methods=['GET'])
-def get_new_messages(account_id):
-    #if not request.is_json:
-    #    return {"status": "error", "message": "request should be in json"}
-    #data = json.loads(request.data)
-    accDB.get_new_messages(account_id)
+#fix this function -------------------------------------------------------------------------------------------
+@app.route('/messages/<int:account_id>', methods=['POST'])
+def get_all_messages(account_id):
+    if not request.is_json:
+        return {"status": "error", "message": "request should be in json"}
+    data = json.loads(request.data)
+    if not accDB.check_password(account_id, data["password"]):
+        return {"status": "error", "message": "password is not correct"}
+    accDB.get_all_messages(account_id)
     return {"status": "ok"}
 
 
@@ -93,7 +96,7 @@ def get_new_messages(account_id):
 def create_new_dialog(user1_id, user2_id):
     result = accDB.create_new_dialog(user1_id, user2_id)
     if result:
-        return {"status": "ok"}
+        return {"status": "ok", "dialog_id": result}
     else:
         return {"status": "error", "message": "dialog is already exist or users does not"}
 
