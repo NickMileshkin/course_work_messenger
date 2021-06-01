@@ -118,5 +118,10 @@ class ServerConnector:
         result = requests.post(f'{self.url}/messages/{self.user_id}',
                                         json={'user_id': self.user_id,
                                               'password': self.user_password}).json()
-        return result
+
+        for i in range((len(result)-1)//5):
+            self.client_db.add_message(result['account_id' + str(i)], result['dialog_id' + str(i)],
+                                       result['time' + str(i)], result['message' + str(i)],
+                                       result['is_new' + str(i)])
+
 
