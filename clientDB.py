@@ -20,6 +20,12 @@ class ClientDatabase:
             connection.commit()
         connection.close()
 
+    def is_authorization(self):
+        pass
+
+    def authorization(self):
+        pass
+
     def get_dialogs(self):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
