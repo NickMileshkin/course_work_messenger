@@ -31,5 +31,19 @@ class ClientDatabase:
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
             cursor.execute("""INSERT INTO dialogs (dialog_id, account_id)
-                                       VALUES (?, ?)""", (dialog_id, account_id))
+                              VALUES (?, ?)""", (dialog_id, account_id))
             connection.commit()
+
+    def add_message(self, account_id, dialog_id, time, message, is_new):
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            cursor.execute("""INSERT INTO messages (account_id, dialog_id, time, message, is_new)
+                              VALUES (?, ?, ?, ?, ?)""", (account_id, dialog_id, time, message, is_new))
+            connection.commit()
+
+    def get_messages(self, dialog_id):
+        with sqlite3.connect(self._db) as connection:
+            cursor = connection.cursor()
+            messages = cursor.execute("""SELECT account_id, time, message, is_new FROM messages 
+                                                  WHERE dialog_id = ?""", (dialog_id,)).fetchall()
+            return messages
