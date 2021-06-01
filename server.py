@@ -16,14 +16,14 @@ def get_accounts():
     result = [{"id": id_, "login": login, "password": password}
               for id_, login, password in accDB.get_accounts()]
     print(result)
-    return "db.get_accounts()"
+    return {"status": "ok"}
 
 
 @app.route('/accounts/<int:account_id>', methods=['GET'])
 def get_account_info(account_id):
     result = accDB.get_account_info(account_id)
     if result:
-        return {"login": result}
+        return {"status": "ok", "login": result}
     else:
         return {"status": "error", "message": "account does not exist"}
 
@@ -44,7 +44,7 @@ def get_authorization():
     data = json.loads(request.data)
     result = accDB.get_authorization(data["login"], data["password"])
     if result:
-        return {"status": result}
+        return {"status": "ok", "id": result}
     else:
         return {"status": "rejected"}
 
