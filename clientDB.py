@@ -30,6 +30,6 @@ class ClientDatabase:
     def add_dialog(self, dialog_id, account_id):
         with sqlite3.connect(self._db) as connection:
             cursor = connection.cursor()
-            result = cursor.execute("""INSERT INTO dialogs (dialog_id, account_id)
+            cursor.execute("""INSERT INTO dialogs (dialog_id, account_id)
                                        VALUES (?, ?)""", (dialog_id, account_id))
             connection.commit()
