@@ -1,5 +1,5 @@
 import sys  # sys нужен для передачи argv в QApplication
-
+import os
 import requests.exceptions
 
 from server_connector import ServerConnector, SecurityError
@@ -9,6 +9,7 @@ from Interface.registration import Ui_RegistrationWindow  # Это наш кон
 from Interface.authorization import Ui_AuthorizationWindow
 from Interface.main_page import Ui_MainWindow
 from Interface.settings import Ui_SettingWindow
+from clientDB import ClientDatabase
 
 
 class RegistrationWindow(QtWidgets.QDialog, Ui_RegistrationWindow):  # класс, отвечающий за окно регистрации
@@ -108,12 +109,15 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         super().__init__()
         self.setupUi(self)
         self.server = server
-        self.prev_active_dialog = 0
+        self.client_db = server.client_db
         self.active_dialog = None  # хранит номер активного диалога
         self.dialogs = []
-        self.server.get_dialogs()
-        for i in range(len(server.dialogs)):
-            self.add_dialog(server.dialogs[i], server.interlocutors_id[i])
+        self.server.add_dialogs()
+        dial = self.server.client_db.get_dialogs()
+        for i in range(len(self.server.client_db.get_dialogs())):
+            self.add_dialog(dial[i][0], dial[i][1])
+
+        #self.get_all_message()
         self.user_id = server.user_id
         self.user_login = server.user_login
         self.user_password = server.user_password
@@ -151,8 +155,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             self.send_message()
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
         if event.key() == 61:  # условия для проверки работы добавления диалогов
-            self.server.get_all_messages()
-            print(self.active_dialog.messages)
+            print(self.server.client_db.get_dialogs())
 
     # функция открытия окна с поиском аккаунта
     def find_user(self):
@@ -165,6 +168,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             if new_dialog['status'] != 'error':
                 self.server.dialogs.append(new_dialog['dialog_id'])
                 self.add_dialog(new_dialog['dialog_id'], user_id)
+                self.server.client_db.add_dialog(new_dialog['dialog_id'], user_id)
             else:
                 message = QtWidgets.QMessageBox()
                 message.setText('Попытка создать уже существующий диалог')
@@ -180,6 +184,11 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     def open_setting(self):
         settings_window = SettingsWindow(self.server)
         settings_window.exec()
+
+    """def get_all_message(self):
+        result = self.server.get_all_messages()
+        for i in range((len(result)-1)//5):
+            self.dialogs"""
 
 
 class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов, на которые можно нажимать
@@ -213,7 +222,6 @@ class Message(ClickableWidget):  # класс сообшения
 class Dialog(ClickableWidget):  # Класс диалог
     def __init__(self, dialogs_id, interlocutor_id, server: ServerConnector):
         super(Dialog, self).__init__()
-        self.messages = []
         self.id = dialogs_id
         self.interlocutor_id = interlocutor_id
         self.server = server
@@ -252,8 +260,8 @@ class Dialog(ClickableWidget):  # Класс диалог
 if __name__ == '__main__':
 
     app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
-    connector = ServerConnector("http://127.0.0.1", 5000)
-
+    client_db = ClientDatabase()
+    connector = ServerConnector("http://127.0.0.1", 5000, client_db)
     authorization_window = AuthorizationWindow()
     authorization_window.exec_()
     if authorization_window.is_accepted:
@@ -275,3 +283,4 @@ if __name__ == '__main__':
         main_window = MainPage(connector)
         main_window.show()
     app.exec_()  # то запускаем функцию main()
+    os.remove("ClientDB.sqlite")

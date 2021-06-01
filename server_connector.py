@@ -1,5 +1,5 @@
 import requests
-
+from clientDB import ClientDatabase
 
 class SecurityError(Exception):
     pass
@@ -11,9 +11,10 @@ class JsonError(Exception):
 
 class ServerConnector:
 
-    def __init__(self, address, port):
+    def __init__(self, address, port, client_db: ClientDatabase):
         self.url = f"{address}:{port}"
         self.user_id = None
+        self.client_db = client_db
         self.user_login = None
         self.user_password = None
         self.report_message = None
@@ -101,7 +102,6 @@ class ServerConnector:
         result = requests.get(f'{self.url}/dialogs/{self.user_id}/{interlocutor_id}',
                                json={'user1_id': self.user_id,
                                      'user2_id': interlocutor_id}).json()
-        print(result)
         if result['status'] == 'error':
             self.report_message = "Диалог уже существует"
             return result
@@ -109,16 +109,16 @@ class ServerConnector:
             self.report_message = "Диалог добавлен"
             return result
 
-    def get_dialogs(self):
+    def add_dialogs(self):
         result = requests.post(f'{self.url}/dialogs/{self.user_id}',
                                json={'user_id': self.user_id,
                                      'password': self.user_password}).json()
         for i in range((len(result)-1) // 2):
-            self.dialogs.append(result["dialog_id" + str(i)])
-            self.interlocutors_id.append(result["account_id"+str(i)])
+            self.client_db.add_dialog(result["dialog_id" + str(i)], result["account_id"+str(i)])
 
     def get_all_messages(self):
-        result = result = requests.post(f'{self.url}/messages/{self.user_id}',
+        result = requests.post(f'{self.url}/messages/{self.user_id}',
                                         json={'user_id': self.user_id,
                                               'password': self.user_password}).json()
-        print(result)
+        return result
+
