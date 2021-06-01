@@ -166,9 +166,8 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         if user_login != 'None':
             new_dialog = self.server.create_new_dialog(user_id)
             if new_dialog['status'] != 'error':
-                self.server.dialogs.append(new_dialog['dialog_id'])
-                self.add_dialog(new_dialog['dialog_id'], user_id)
                 self.server.client_db.add_dialog(new_dialog['dialog_id'], user_id)
+                self.add_dialog(new_dialog['dialog_id'], user_id)
             else:
                 message = QtWidgets.QMessageBox()
                 message.setText('Попытка создать уже существующий диалог')
@@ -235,23 +234,26 @@ class Dialog(ClickableWidget):  # Класс диалог
         self.layout.addWidget(self.name)
         self.layout.addWidget(self.line)
         self.container.setStyleSheet("background-color:white;")
-
+        self.messages = []
         self.setLayout(self.layout)
 
     def open_dialogs(self):  # функция отвечающая за открытие экземпляра класса диалог
         main_window.textEdit_message.clear()
         main_window.active_dialog = self
+        print(1)
         for i in reversed(range(main_window.scrollLayout_message.count())):
             widgetToRemove = main_window.scrollLayout_message.itemAt(i).widget()
             # remove it from the layout list
             main_window.scrollLayout_message.removeWidget(widgetToRemove)
             # remove it from the gui
             widgetToRemove.setParent(None)
+        print(2)
         for i in range(len(self.messages)):
             main_window.scrollLayout_message.addRow(self.messages[i])
-
+        print(3)
         for i in range(len(main_window.dialogs)):
             main_window.dialogs[i].container.setStyleSheet("background-color:white;")
+        print(4)
         self.container.setStyleSheet("background-color:blue;")
         main_window.textEdit_message.setEnabled(True)
         main_window.vbar_scrollArea_message.setValue(main_window.vbar_scrollArea_message.maximum())
