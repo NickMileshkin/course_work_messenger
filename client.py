@@ -110,7 +110,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.setupUi(self)
         self.server = server
         self.client_db = server.client_db
-        self.active_dialog = None  # хранит номер активного диалога
+        self.active_dialog = None  # хранит активный диалог
         self.dialogs = []
 
         self.user_id = server.user_id
@@ -158,7 +158,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             self.send_message()
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
         if event.key() == 61:  # условия для проверки работы добавления диалогов
-            print(self.client_db.get_messages(self.active_dialog.id))
+            self.update_data()
 
     # функция открытия окна с поиском аккаунта
     def find_user(self):
@@ -186,6 +186,22 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     def open_setting(self):
         settings_window = SettingsWindow(self.server)
         settings_window.exec()
+
+    def update_data(self):
+
+        self.server.get_new_messages()
+        for i in range(len(self.dialogs)):
+            self.dialogs[i].update_message()
+        for i in reversed(range(self.scrollLayout_message.count())):
+            widgetToRemove = self.scrollLayout_message.itemAt(i).widget()
+            # remove it from the layout list
+            self.scrollLayout_message.removeWidget(widgetToRemove)
+            # remove it from the gui
+            widgetToRemove.setParent(None)
+
+        if self.active_dialog != None:
+            for i in range(len(self.active_dialog.messages)):
+                self.scrollLayout_message.addRow(self.active_dialog.messages[i])
 
 
 class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов, на которые можно нажимать
@@ -237,29 +253,38 @@ class Dialog(ClickableWidget):  # Класс диалог
         self.setLayout(self.layout)
 
     def open_dialogs(self):  # функция отвечающая за открытие экземпляра класса диалог
-        main_window.textEdit_message.clear()
-        main_window.active_dialog = self
+        if self != main_window.active_dialog:
+            self.server.read_this_dialog(self.id)
+            main_window.textEdit_message.clear()
+            if main_window.active_dialog != None:
+                main_window.active_dialog.container.setStyleSheet("background-color:white;")
+            main_window.active_dialog = self
+
+            messages = main_window.client_db.get_messages(self.id)
+            for i in range(len(messages)):
+                new_message = Message(messages[i][2], messages[i][1], messages[i][0], messages[i][3])
+                self.messages.append(new_message)
+            for i in reversed(range(main_window.scrollLayout_message.count())):
+                widgetToRemove = main_window.scrollLayout_message.itemAt(i).widget()
+                # remove it from the layout list
+                main_window.scrollLayout_message.removeWidget(widgetToRemove)
+                # remove it from the gui
+                widgetToRemove.setParent(None)
+            for i in range(len(self.messages)):
+                main_window.scrollLayout_message.addRow(self.messages[i])
+            self.container.setStyleSheet("background-color:blue;")
+            main_window.textEdit_message.setEnabled(True)
+            main_window.vbar_scrollArea_message.setValue(main_window.vbar_scrollArea_message.maximum())
+
+    def update_message(self):
+        self.messages = []
         messages = main_window.client_db.get_messages(self.id)
+        print(messages)
         for i in range(len(messages)):
             new_message = Message(messages[i][2], messages[i][1], messages[i][0], messages[i][3])
             self.messages.append(new_message)
-        for i in reversed(range(main_window.scrollLayout_message.count())):
-            widgetToRemove = main_window.scrollLayout_message.itemAt(i).widget()
-            # remove it from the layout list
-            main_window.scrollLayout_message.removeWidget(widgetToRemove)
-            # remove it from the gui
-            widgetToRemove.setParent(None)
-        for i in range(len(self.messages)):
-            main_window.scrollLayout_message.addRow(self.messages[i])
-        for i in range(len(main_window.dialogs)):
-            main_window.dialogs[i].container.setStyleSheet("background-color:white;")
-        self.container.setStyleSheet("background-color:blue;")
-        main_window.textEdit_message.setEnabled(True)
-        main_window.vbar_scrollArea_message.setValue(main_window.vbar_scrollArea_message.maximum())
-
 
 if __name__ == '__main__':
-
     app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
     client_db = ClientDatabase()
     connector = ServerConnector("http://127.0.0.1", 5000, client_db)
