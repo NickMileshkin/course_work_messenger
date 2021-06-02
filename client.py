@@ -130,6 +130,9 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.label_user_name.setText(self.user_login)
         self.label_user_id.setText("# " + str(self.user_id))
         self.btn_settings.clicked.connect(self.open_setting)
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.update_data)
+        self.timer.start(5000)
 
     # функция отправки сообщения
     def send_message(self):
@@ -137,12 +140,13 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         time = (str(datetime.now()).split('.')[0])
         if message_text != '' and not(message_text.isspace()):
             self.server.send_message(self.active_dialog.id, message_text, time)
-            new_message = Message(message_text, time, self.user_id, False)
+            new_message = Message(message_text, time, self.user_id, False, self.server)
             new_message.clicked.connect(new_message.p)
             self.client_db.add_message(self.user_id, self.active_dialog.id, time, message_text, False)
             self.active_dialog.messages.append(new_message)
             self.scrollLayout_message.addRow(new_message)
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
+        self.active_dialog.server.read_this_dialog(self.active_dialog.id)
         self.textEdit_message.clear()
 
     # функция добавления диалога
@@ -198,10 +202,10 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             self.scrollLayout_message.removeWidget(widgetToRemove)
             # remove it from the gui
             widgetToRemove.setParent(None)
-
         if self.active_dialog != None:
             for i in range(len(self.active_dialog.messages)):
                 self.scrollLayout_message.addRow(self.active_dialog.messages[i])
+            self.active_dialog.server.read_this_dialog(self.active_dialog.id)
 
 
 class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов, на которые можно нажимать
@@ -213,12 +217,13 @@ class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов,
 
 
 class Message(ClickableWidget):  # класс сообшения
-    def __init__(self, message_text, message_time, message_sender, is_new):
+    def __init__(self, message_text, message_time, message_sender, is_new, server: ServerConnector):
         super(Message, self).__init__()
-        if message_sender == main_window.user_id:
+        self.server = server
+        if message_sender == server.user_id:
             self.name = QtWidgets.QLabel("Вы")
         else:
-            self.name = QtWidgets.QLabel(main_window.active_dialog.interlocutor_login)
+            self.name = QtWidgets.QLabel(self.server.active_dialog.interlocutor_login)
         self.is_new = is_new
         self.message_text = QtWidgets.QLabel(message_text)
         self.message_text.setWordWrap(True)
@@ -262,7 +267,7 @@ class Dialog(ClickableWidget):  # Класс диалог
 
             messages = main_window.client_db.get_messages(self.id)
             for i in range(len(messages)):
-                new_message = Message(messages[i][2], messages[i][1], messages[i][0], messages[i][3])
+                new_message = Message(messages[i][2], messages[i][1], messages[i][0], messages[i][3], self.server)
                 self.messages.append(new_message)
             for i in reversed(range(main_window.scrollLayout_message.count())):
                 widgetToRemove = main_window.scrollLayout_message.itemAt(i).widget()
@@ -278,11 +283,12 @@ class Dialog(ClickableWidget):  # Класс диалог
 
     def update_message(self):
         self.messages = []
-        messages = main_window.client_db.get_messages(self.id)
+        messages = self.server.client_db.get_messages(self.id)
         print(messages)
         for i in range(len(messages)):
-            new_message = Message(messages[i][2], messages[i][1], messages[i][0], messages[i][3])
+            new_message = Message(messages[i][2], messages[i][1], messages[i][0], messages[i][3], self.server)
             self.messages.append(new_message)
+
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
@@ -308,5 +314,6 @@ if __name__ == '__main__':
 
         main_window = MainPage(connector)
         main_window.show()
+
     app.exec_()  # то запускаем функцию main()
     os.remove("ClientDB.sqlite")

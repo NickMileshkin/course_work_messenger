@@ -18,7 +18,7 @@ class ServerConnector:
         self.user_login = None
         self.user_password = None
         self.report_message = None
-
+        self.active_dialog = None
         self.messages = []
 
     def add_new_user(self, user_login, user_password):
