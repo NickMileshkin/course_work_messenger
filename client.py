@@ -162,8 +162,6 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         if event.key() == 16777220:  # нажатие Enter
             self.send_message()
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
-        if event.key() == 61:  # условия для проверки работы добавления диалогов
-            self.update_data()
 
     # функция открытия окна с поиском аккаунта
     def find_user(self):
