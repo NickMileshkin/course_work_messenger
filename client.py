@@ -20,6 +20,7 @@ class RegistrationWindow(QtWidgets.QDialog, Ui_RegistrationWindow):  # клас�
         self.btn_registration.clicked.connect(self.registration_acc)
         self.login = None
         self.password = None
+        self.setWindowFlags(QtCore.Qt.WindowCloseButtonHint)
 
     def registration_acc(self):
         self.login = self.lineEdit_login.text()
@@ -38,6 +39,7 @@ class AuthorizationWindow(QtWidgets.QDialog, Ui_AuthorizationWindow):  # кла�
         self.btn_authorization.clicked.connect(self.authorization_acc)
         self.login = None
         self.password = None
+        self.setWindowFlags(QtCore.Qt.WindowCloseButtonHint)
 
     def authorization_acc(self):
         self.login = (self.lineEdit_login.text())
@@ -63,6 +65,7 @@ class SettingsWindow(QtWidgets.QDialog, Ui_SettingWindow):
         self.old_password = None
         self.accept_user_password = None
         self.new_login = None
+        self.setWindowFlags(QtCore.Qt.WindowCloseButtonHint)
 
     def set_new_password(self):
         self.label_message.setText('')
