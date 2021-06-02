@@ -104,7 +104,7 @@ def get_new_messages(account_id):
     data = json.loads(request.data)
     if not accDB.check_password(account_id, data["password"]):
         return {"status": "error", "message": "password is not correct"}
-    result = accDB.get_all_messages(account_id)
+    result = accDB.get_new_messages(account_id)
     if len(result) > 0:
         output = (("status", "ok"),
                   ("account_id0", result[0][0]),
