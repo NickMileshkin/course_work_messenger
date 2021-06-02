@@ -260,6 +260,7 @@ class Dialog(ClickableWidget):  # Класс диалог
     def open_dialogs(self):  # функция отвечающая за открытие экземпляра класса диалог
         if self != main_window.active_dialog:
             self.server.read_this_dialog(self.id)
+            self.server.active_dialog = self
             main_window.textEdit_message.clear()
             if main_window.active_dialog != None:
                 main_window.active_dialog.container.setStyleSheet("background-color:white;")
