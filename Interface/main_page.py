@@ -37,7 +37,7 @@ class Ui_MainWindow(object):
         self.textEdit_search = QtWidgets.QLineEdit(self.centralwidget)
         self.textEdit_search.setMinimumSize(QtCore.QSize(0, 30))
         self.textEdit_search.setObjectName("textEdit_login")
-        self.textEdit_search.setPlaceholderText("Поиск друзей по логину или ID")
+        self.textEdit_search.setPlaceholderText("Поиск друзей по ID")
         self.horizontalLayout.addWidget(self.textEdit_search)
 
         self.btn_search_user = QtWidgets.QPushButton(self.centralwidget)
