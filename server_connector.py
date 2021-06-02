@@ -96,6 +96,12 @@ class ServerConnector:
             else:
                 raise SecurityError
 
+    def get_dialogs(self):
+        result = requests.post(f'{self.url}/dialogs/{self.user_id}',
+                               json={'user_id': self.user_id,
+                                     'password': self.user_password}).json()
+        return result
+
     def create_new_dialog(self, interlocutor_id):
         result = requests.get(f'{self.url}/dialogs/{self.user_id}/{interlocutor_id}',
                                json={'user1_id': self.user_id,
@@ -125,9 +131,9 @@ class ServerConnector:
                                        result['is_new' + str(i)])
 
     def read_this_dialog(self, dialog_id):
-        requests.post(f'{self.url}/dialogs/{dialog_id}/read',
+        print(requests.post(f'{self.url}/dialogs/{dialog_id}/read',
                                json={'account_id': self.user_id,
-                                     'password': self.user_password}).json()
+                                     'password': self.user_password}).json())
 
     def get_new_messages(self):
         result = requests.post(f'{self.url}/messages/{self.user_id}/new',
@@ -138,4 +144,6 @@ class ServerConnector:
             for i in range((len(result)-1)//4):
                 if result['account_id' + str(i)] != self.user_id:
                     self.client_db.add_message(result['account_id' + str(i)], result['dialog_id' + str(i)],
-                                           result['time' + str(i)], result['message' + str(i)], True)
+                                               result['time' + str(i)], result['message' + str(i)], True)
+
+
