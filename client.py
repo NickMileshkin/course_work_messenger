@@ -140,9 +140,9 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         time = (str(datetime.now()).split('.')[0])
         if message_text != '' and not(message_text.isspace()):
             self.server.send_message(self.active_dialog.id, message_text, time)
-            new_message = Message(message_text, time, self.user_id, False, self.server)
+            new_message = Message(message_text, time, self.user_id, True, self.server)
             new_message.clicked.connect(new_message.p)
-            self.client_db.add_message(self.user_id, self.active_dialog.id, time, message_text, False)
+            self.client_db.add_message(self.user_id, self.active_dialog.id, time, message_text, True)
             self.active_dialog.messages.append(new_message)
             self.scrollLayout_message.addRow(new_message)
             self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
@@ -194,16 +194,18 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     def update_data(self):
 
         self.server.get_new_messages()
-
-        for i in range(len(self.dialogs)):
-            self.dialogs[i].update_message()
-
         for i in reversed(range(self.scrollLayout_message.count())):
             widgetToRemove = self.scrollLayout_message.itemAt(i).widget()
             # remove it from the layout list
             self.scrollLayout_message.removeWidget(widgetToRemove)
             # remove it from the gui
             widgetToRemove.setParent(None)
+
+        for i in range(len(self.dialogs)):
+            self.server.read_this_dialog(self.dialogs[i].id)
+            if self.active_dialog != None:
+                self.dialogs[i].update_message()
+
 
 
         if self.active_dialog != None:
