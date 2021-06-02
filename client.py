@@ -124,6 +124,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
             self.add_dialog(dial[i][0], dial[i][1])
 
         self.server.get_all_messages()
+
         self.btn_send_message.clicked.connect(self.send_message)
         self.textEdit_message.setEnabled(False)  # Отключает возможность ввода сообщения
         self.btn_search_user.clicked.connect(self.find_user)
@@ -132,7 +133,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.btn_settings.clicked.connect(self.open_setting)
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_data)
-        self.timer.start(4000)
+        self.timer.start(2000)
 
     # функция отправки сообщения
     def send_message(self):
@@ -194,20 +195,16 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     def update_data(self):
 
         self.server.get_new_messages()
-        print(1)
         for i in reversed(range(self.scrollLayout_message.count())):
             widgetToRemove = self.scrollLayout_message.itemAt(i).widget()
             # remove it from the layout list
             self.scrollLayout_message.removeWidget(widgetToRemove)
             # remove it from the gui
             widgetToRemove.setParent(None)
-        print(2)
         for i in range(len(self.dialogs)):
             self.server.read_this_dialog(self.dialogs[i].id)
             if self.active_dialog != None:
                 self.dialogs[i].update_message()
-
-
 
         if self.active_dialog != None:
             for i in range(len(self.active_dialog.messages)):
@@ -273,10 +270,6 @@ class Dialog(ClickableWidget):  # Класс диалог
                 main_window.active_dialog.container.setStyleSheet("background-color:white;")
             main_window.active_dialog = self
 
-            messages = main_window.client_db.get_messages(self.id)
-            for i in range(len(messages)):
-                new_message = Message(messages[i][2], messages[i][1], messages[i][0], messages[i][3], self.server)
-                self.messages.append(new_message)
             for i in reversed(range(main_window.scrollLayout_message.count())):
                 widgetToRemove = main_window.scrollLayout_message.itemAt(i).widget()
                 # remove it from the layout list

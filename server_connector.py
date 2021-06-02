@@ -125,12 +125,11 @@ class ServerConnector:
                                        result['is_new' + str(i)])
 
     def read_this_dialog(self, dialog_id):
-        print(requests.post(f'{self.url}/dialogs/{dialog_id}/read',
+        requests.post(f'{self.url}/dialogs/{dialog_id}/read',
                                json={'account_id': self.user_id,
-                                     'password': self.user_password}).json())
+                                     'password': self.user_password}).json()
 
     def get_new_messages(self):
-        message = None
         result = requests.post(f'{self.url}/messages/{self.user_id}/new',
                                json={'user_id': self.user_id,
                                      'password': self.user_password}).json()
