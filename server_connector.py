@@ -1,12 +1,68 @@
 import requests
 from clientDB import ClientDatabase
-
+from math import ceil
 class SecurityError(Exception):
     pass
 
 
 class JsonError(Exception):
     pass
+
+
+
+def encryption(s):
+    cod = ''
+    k = 'Зачёт'
+    m = []
+    n = int(ceil(len(s) / len(k)))  # колличество строк в таблице
+    z = 0  #
+    for i in range(len(k)):  # Создание таблицы
+        m.append([k[i]])
+        for j in range(n):
+            if z <= len(s)-1:
+                m[i].append(s[z])
+            else:
+                m[i].append('*')  # заполнение пустых ячеек таблицы
+            z += 1
+
+    m.sort()
+    for j in range(1, n+1):
+        for i in range(len(k)):
+            cod = cod + str(m[i][j])
+
+    return cod
+
+
+def decryption(cod):
+    decod = ''
+    m = []
+    z = 0
+    k = 'Зачёт'
+    sort_k = []
+    for i in range(len(k)):
+        sort_k.append(k[i])
+    sort_k.sort()  # создание отсортированного ключа
+    n = int(ceil(len(cod) / len(k)))  # колличество строк в таблице
+    for i in range(len(k)):
+        m.append([])  # создание пустой таблицы
+
+    for j in range(n):
+        for i in range(len(k)):
+            m[i].append(cod[z])
+            z += 1
+    for i in range(len(k)):
+        m[i].append(sort_k[i])  # добавление в конец таблицы отсортированного ключа
+    for i in range(len(k)):
+        for j in range(len(k)):
+            if k[i] == m[j][n]:  # сравнение последней строки таблицы с ключом
+                tmp = m[j]
+                m[j] = m[i]
+                m[i] = tmp
+    for i in range(len(k)):
+        for j in range(n):
+            decod += m[i][j]
+    decod = decod.replace('*', '')
+    return decod
 
 
 class ServerConnector:
@@ -87,7 +143,7 @@ class ServerConnector:
                                json={'account_id': self.user_id,
                                      'dialog_id': dialog_id,
                                      'time': time,
-                                     'message': message,
+                                     'message': encryption(message),
                                      'password': self.user_password}).json()
 
         if result['status'] == 'error':
@@ -127,23 +183,22 @@ class ServerConnector:
 
         for i in range((len(result)-1)//5):
             self.client_db.add_message(result['account_id' + str(i)], result['dialog_id' + str(i)],
-                                       result['time' + str(i)], result['message' + str(i)],
+                                       result['time' + str(i)], decryption(result['message' + str(i)]),
                                        result['is_new' + str(i)])
 
     def read_this_dialog(self, dialog_id):
-        print(requests.post(f'{self.url}/dialogs/{dialog_id}/read',
+        requests.post(f'{self.url}/dialogs/{dialog_id}/read',
                                json={'account_id': self.user_id,
-                                     'password': self.user_password}).json())
+                                     'password': self.user_password}).json()
 
     def get_new_messages(self):
         result = requests.post(f'{self.url}/messages/{self.user_id}/new',
                                json={'user_id': self.user_id,
                                      'password': self.user_password}).json()
-        print(result)
         if result['status'] != 'error':
             for i in range((len(result)-1)//4):
                 if result['account_id' + str(i)] != self.user_id:
                     self.client_db.add_message(result['account_id' + str(i)], result['dialog_id' + str(i)],
-                                               result['time' + str(i)], result['message' + str(i)], True)
+                                               result['time' + str(i)], decryption(result['message' + str(i)]), True)
 
 
