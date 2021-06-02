@@ -21,7 +21,7 @@ class Ui_SettingWindow(object):
         self.lineEdit_user_password_login = QtWidgets.QLineEdit(self.account_setting)
         self.lineEdit_user_password_login.setGeometry(QtCore.QRect(140, 40, 131, 20))
         self.lineEdit_user_password_login.setObjectName("lineEdit_2")
-
+        self.lineEdit_user_password_login.setEchoMode(QtWidgets.QLineEdit.Password)
         self.btn_new_login = QtWidgets.QPushButton(self.account_setting)
         self.btn_new_login.setGeometry(QtCore.QRect(280, 40, 101, 20))
         self.btn_new_login.setObjectName("pushButton")
@@ -67,7 +67,7 @@ class Ui_SettingWindow(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "Настройки"))
         self.lineEdit_new_login.setPlaceholderText(_translate("Dialog", "Новый логин"))
         self.lineEdit_user_password_login.setPlaceholderText(_translate("Dialog", "Введите пароль"))
         self.btn_new_login.setText(_translate("Dialog", "Сменить логин"))
