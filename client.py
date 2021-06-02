@@ -327,6 +327,8 @@ if __name__ == '__main__':
 
         main_window = MainPage(connector)
         main_window.show()
+    else:
+        sys.exit()
 
     app.exec_()  # то запускаем функцию main()
-    os.remove("ClientDB.sqlite")
+
