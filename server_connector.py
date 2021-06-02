@@ -130,11 +130,13 @@ class ServerConnector:
                                      'password': self.user_password}).json())
 
     def get_new_messages(self):
+        message = None
         result = requests.post(f'{self.url}/messages/{self.user_id}/new',
                                json={'user_id': self.user_id,
                                      'password': self.user_password}).json()
         print(result)
         if result['status'] != 'error':
             for i in range((len(result)-1)//4):
-                self.client_db.add_message(result['account_id' + str(i)], result['dialog_id' + str(i)],
+                if result['account_id' + str(i)] != self.user_id:
+                    self.client_db.add_message(result['account_id' + str(i)], result['dialog_id' + str(i)],
                                            result['time' + str(i)], result['message' + str(i)], True)

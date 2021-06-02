@@ -132,7 +132,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         self.btn_settings.clicked.connect(self.open_setting)
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_data)
-        self.timer.start(1000)
+        self.timer.start(4000)
 
     # функция отправки сообщения
     def send_message(self):
@@ -194,13 +194,14 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     def update_data(self):
 
         self.server.get_new_messages()
+        print(1)
         for i in reversed(range(self.scrollLayout_message.count())):
             widgetToRemove = self.scrollLayout_message.itemAt(i).widget()
             # remove it from the layout list
             self.scrollLayout_message.removeWidget(widgetToRemove)
             # remove it from the gui
             widgetToRemove.setParent(None)
-
+        print(2)
         for i in range(len(self.dialogs)):
             self.server.read_this_dialog(self.dialogs[i].id)
             if self.active_dialog != None:
@@ -292,6 +293,7 @@ class Dialog(ClickableWidget):  # Класс диалог
         self.messages = []
         messages = self.server.client_db.get_messages(self.id)
         for i in range(len(messages)):
+
             new_message = Message(messages[i][2], messages[i][1], messages[i][0], messages[i][3], self.server)
             self.messages.append(new_message)
 
