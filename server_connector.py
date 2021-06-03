@@ -1,13 +1,14 @@
 import requests
 from clientDB import ClientDatabase
 from math import ceil
+
+
 class SecurityError(Exception):
     pass
 
 
 class JsonError(Exception):
     pass
-
 
 
 def encryption(s):
