@@ -163,8 +163,9 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
     # функция отвечающая за нажатие кнопки
     def keyPressEvent(self, event):
         if event.key() == 16777220:  # нажатие Enter
-            self.send_message()
-            self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
+            if self.active_dialog != None:
+                self.send_message()
+                self.vbar_scrollArea_message.setValue(self.vbar_scrollArea_message.maximum())
 
     # функция открытия окна с поиском аккаунта
     def find_user(self):
@@ -217,7 +218,6 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         if self.active_dialog != None:
             for i in range(len(self.active_dialog.messages)):
                 self.scrollLayout_message.addRow(self.active_dialog.messages[i])
-
 
 
 class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов, на которые можно нажимать
