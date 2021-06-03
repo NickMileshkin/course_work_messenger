@@ -286,7 +286,7 @@ class Dialog(ClickableWidget):  # Класс диалог
                 widgetToRemove.setParent(None)
             for i in range(len(self.messages)):
                 main_window.scrollLayout_message.addRow(self.messages[i])
-            self.container.setStyleSheet("background-color:blue;")
+            self.container.setStyleSheet("background-color:rgb(183, 242, 255);")
             main_window.textEdit_message.setEnabled(True)
             main_window.vbar_scrollArea_message.setValue(main_window.vbar_scrollArea_message.maximum())
 
