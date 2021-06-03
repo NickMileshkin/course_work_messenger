@@ -1,10 +1,10 @@
 import sys  # sys нужен для передачи argv в QApplication
 import os
 import requests.exceptions
-
-from server_connector import ServerConnector, SecurityError
 from PyQt5 import QtWidgets, QtCore
 from datetime import datetime
+
+from server_connector import ServerConnector, SecurityError
 from Interface.registration import Ui_RegistrationWindow  # Это наш конвертированный файл дизайна
 from Interface.authorization import Ui_AuthorizationWindow
 from Interface.main_page import Ui_MainWindow
