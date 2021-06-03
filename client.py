@@ -217,7 +217,7 @@ class MainPage(QtWidgets.QMainWindow, Ui_MainWindow):  # класс, отвеч�
         if self.active_dialog != None:
             for i in range(len(self.active_dialog.messages)):
                 self.scrollLayout_message.addRow(self.active_dialog.messages[i])
-            self.active_dialog.server.read_this_dialog(self.active_dialog.id)
+
 
 
 class ClickableWidget(QtWidgets.QWidget):  # класс для виджетов, на которые можно нажимать
